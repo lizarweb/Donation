@@ -88,11 +88,22 @@
   appearance: none !important;
 }
 
+.form-control::placeholder {
+  color: var(--bs-gray-500); /* Replace #yourColor with your desired color */
+}
+
 .wp-core-ui select {
   min-height: unset;
   max-width: unset;
 }
 
+table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
+  text-align: left!important;
+}
+
+.dt-search {
+  margin-right: 15px;
+}
 
 
 

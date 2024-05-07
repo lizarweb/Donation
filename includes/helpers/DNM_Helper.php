@@ -3,6 +3,23 @@ defined( 'ABSPATH' ) || die();
 
 class DNM_Helper {
 
+	public static function get_prefix() {
+		
+		$prefix = get_option( 'dnm_prefix' );
+		if ( ! $prefix ) {
+			$prefix = 'DN00';
+		}
+		return $prefix;
+	}
+
+	public static function get_logo() {
+		$logo = get_option( 'dnm_logo' );
+		if ( ! $logo ) {
+			$logo = esc_url(DNM_PLUGIN_URL . 'assets/images/logo.png');
+		}
+		return $logo;
+	}
+
 	public static function currency_symbols() {
 		return array(
 			'AED' => '&#1583;.&#1573;',
@@ -195,7 +212,6 @@ class DNM_Helper {
 	public static function get_attachment_mime() {
 		return array( 'image/jpg', 'image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/x-rar-compressed', 'application/octet-stream', 'application/zip', 'application/octet-stream', 'application/x-zip-compressed', 'multipart/x-zip', 'video/x-flv', 'video/mp4', 'application/x-mpegURL', 'video/MP2T', 'video/3gpp', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv' );
 	}
-
 
 	public static function is_valid_file( $file, $type = 'attachment' ) {
 		$get_mime = 'get_' . $type . '_mime';
