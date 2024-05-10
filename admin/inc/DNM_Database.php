@@ -40,6 +40,7 @@ class DNM_Database {
 		ID bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		order_id bigint(20) UNSIGNED DEFAULT NULL,
 		type varchar(50) DEFAULT NULL,
+		payment_method varchar(50) DEFAULT NULL,
 		customer_id bigint(20) UNSIGNED DEFAULT NULL,
 		amount decimal(10,2) DEFAULT NULL,
 		label varchar(191) DEFAULT NULL,
@@ -62,35 +63,35 @@ class DNM_Database {
 
 
 	// public static function insertRandomData() {
-	// 	global $wpdb;
-	// 	for ( $i = 0; $i < 10000; $i++ ) {
-	// 		// Generate random data for customer
-	// 		$wpdb->insert(
-	// 			DNM_CUSTOMERS,
-	// 			array(
-	// 				'name'    => 'Name' . $i,
-	// 				'email'   => 'email' . $i . '@example.com',
-	// 				'phone'   => '123-456-' . wp_rand( 1000, 9999 ),
-	// 				'address' => 'Address ' . $i,
-	// 			)
-	// 		);
+	// global $wpdb;
+	// for ( $i = 0; $i < 10000; $i++ ) {
+	// Generate random data for customer
+	// $wpdb->insert(
+	// DNM_CUSTOMERS,
+	// array(
+	// 'name'    => 'Name' . $i,
+	// 'email'   => 'email' . $i . '@example.com',
+	// 'phone'   => '123-456-' . wp_rand( 1000, 9999 ),
+	// 'address' => 'Address ' . $i,
+	// )
+	// );
 
-	// 		$customer_id = $wpdb->insert_id;
-	// 		// Generate random data for order
-	// 		$wpdb->insert(
-	// 			DNM_ORDERS,
-	// 			array(
-	// 				'ID'          => $i,
-	// 				'order_id'    => $i,
-	// 				'type'        => 'type' . wp_rand( 1, 5 ),
-	// 				'customer_id' => $customer_id,
-	// 				'amount'      => wp_rand( 1, 1000 ),
-	// 				'label'       => 'label' . wp_rand( 1, 5 ),
-	// 				'created_at'  => current_time( 'mysql' ),
-	// 				'updated_at'  => current_time( 'mysql' ),
-	// 			)
-	// 		);
-	// 	}
+	// $customer_id = $wpdb->insert_id;
+	// Generate random data for order
+	// $wpdb->insert(
+	// DNM_ORDERS,
+	// array(
+	// 'ID'          => $i,
+	// 'order_id'    => $i,
+	// 'type'        => 'type' . wp_rand( 1, 5 ),
+	// 'customer_id' => $customer_id,
+	// 'amount'      => wp_rand( 1, 1000 ),
+	// 'label'       => 'label' . wp_rand( 1, 5 ),
+	// 'created_at'  => current_time( 'mysql' ),
+	// 'updated_at'  => current_time( 'mysql' ),
+	// )
+	// );
+	// }
 	// }
 
 
@@ -100,5 +101,15 @@ class DNM_Database {
 
 	public static function uninstall() {
 		self::dropTables();
+	}
+
+	public static function insertIntoTable( $table, $data ) {
+		global $wpdb;
+		$wpdb->insert( $table, $data );
+		$id = $wpdb->insert_id;
+		if ( false === $id ) {
+			throw new Exception( 'Failed to insert data into ' . $table );
+		}
+		return $id;
 	}
 }

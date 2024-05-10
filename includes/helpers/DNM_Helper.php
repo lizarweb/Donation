@@ -4,10 +4,10 @@ defined( 'ABSPATH' ) || die();
 class DNM_Helper {
 
 	public static function get_prefix() {
-		
+
 		$prefix = get_option( 'dnm_prefix' );
 		if ( ! $prefix ) {
-			$prefix = 'DN00';
+			$prefix = 'DN';
 		}
 		return $prefix;
 	}
@@ -15,7 +15,7 @@ class DNM_Helper {
 	public static function get_logo() {
 		$logo = get_option( 'dnm_logo' );
 		if ( ! $logo ) {
-			$logo = esc_url(DNM_PLUGIN_URL . 'assets/images/logo.png');
+			$logo = esc_url( DNM_PLUGIN_URL . 'assets/images/logo.png' );
 		}
 		return $logo;
 	}
@@ -235,5 +235,25 @@ class DNM_Helper {
 		if ( ! empty( $buffer ) ) {
 			throw new Exception( esc_html__( 'Unexpected error occurred!', 'school-management' ) );
 		}
+	}
+
+	public static function get_page_url($slug) {
+		$page_url = admin_url( "admin.php?page=$slug" );
+		return $page_url;
+	}
+
+	public static function validate_field($field, $error_message) {
+		if (empty($field)) {
+			return $error_message;
+		}
+		return null;
+	}
+
+	public static function get_post_value( $key, $default = null, $sanitize_callback = null ) {
+		$value = isset( $_POST[ $key ] ) ? $_POST[ $key ] : $default;
+		if ( $sanitize_callback && function_exists( $sanitize_callback ) ) {
+			$value = $sanitize_callback( $value );
+		}
+		return $value;
 	}
 }

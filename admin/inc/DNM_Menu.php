@@ -33,8 +33,10 @@ class Dnm_menu {
 		wp_enqueue_script( 'dnm-bootstrap-js', DNM_PLUGIN_URL . '/assets/js/bootstrap.min.js', array( 'jquery', 'dnm-data-table-js' ), DNM_VERSION, true );
 		wp_enqueue_script( 'dnm-data-table-js', DNM_PLUGIN_URL . '/assets/js/datatables.min.js', array( 'jquery' ), DNM_VERSION, true );
 		wp_enqueue_script( 'dnm-admin-js', DNM_PLUGIN_URL . '/assets/js/admin.js', array( 'jquery', 'dnm-data-table-js' ), DNM_VERSION, true );
-		wp_localize_script( 'dnm-admin-js', 'dnmDateFormat', DNM_Config::date_format() );
-        
+		wp_localize_script( 'dnm-admin-js', 'dnmData', array(
+			'date_format' => DNM_Config::date_format(),
+			'currency'    => DNM_Config::get_currency(),
+			));
 	}
 
 	// dashboard.
@@ -44,7 +46,7 @@ class Dnm_menu {
 
 	// Orders.
 	public static function donation_orders() {
-		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/orders/index.php';
+		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/orders/route.php';
 	}
 
 	// Setting.

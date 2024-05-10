@@ -1,3 +1,11 @@
+<?php 
+
+defined( 'ABSPATH' ) || die();
+
+require_once DNM_PLUGIN_DIR_PATH . '/includes/helpers/DNM_Helper.php';
+
+$page_url = DNM_Helper::get_page_url('donation-orders');
+?>
 <div class="container-fluid mt-3">
     <div class="row ">
         <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
@@ -5,7 +13,7 @@
                 <div class="container-fluid">
                     <a class="navbar-brand"><strong>Orders</strong></a>
                     <form class="d-flex">
-                        <button type="button" class="btn btn-sm btn-dark">Add New</button>
+                        <a href="<?php echo esc_url( $page_url . '&action=save' ); ?>" class="btn btn-dark" ><i class="bi bi-plus-circle-fill"></i> Add New</a>
                     </form>
                 </div>
             </nav>
@@ -20,12 +28,9 @@
                             <th>Amount</th>
                             <th>Payment method</th>
                             <th>Created at</th>
-                            
                         </tr>
                     </thead>
-                    <tbody>
-
-                    </tbody>
+                    <tbody> </tbody>
                     <tfoot>
                         <tr>
                             <th>#ID</th>
@@ -35,7 +40,6 @@
                             <th>Amount</th>
                             <th>Payment method</th>
                             <th>Created at</th>
-                            
                         </tr>
                     </tfoot>
                 </table>
