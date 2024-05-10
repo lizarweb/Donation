@@ -9,7 +9,7 @@ class DNM_Order {
 	public static function fetch_orders() {
 		global $wpdb;
 		$response = array();
-		$limit    = isset( $_POST['length'] ) ? intval( $_POST['length'] ) : 10;
+		$limit    = isset( $_POST['length'] ) ? intval( $_POST['length'] ) : 25;
 		$start    = isset( $_POST['start'] ) ? intval( $_POST['start'] ) : 0;
 		$order    = isset( $_POST['order'] ) ? intval( $_POST['order'][0]['column'] ) : 0;
 		$dir      = isset( $_POST['order'] ) ? sanitize_text_field( $_POST['order'][0]['dir'] ) : 'desc';
@@ -112,6 +112,7 @@ class DNM_Order {
 
 				if ( $customer_id ) {
 					// Update the customer data
+					$customerData['updated_at'] = current_time( 'mysql' );
 					$update_result = DNM_Database::updateTable( DNM_CUSTOMERS, $customerData, array( 'ID' => $customer_id ) );
 
 					if ( false === $update_result ) {
@@ -143,6 +144,7 @@ class DNM_Order {
 
 			if ( $data['order_id'] != 0 ) {
 				// Update the order data
+				$order_data['updated_at'] = current_time( 'mysql' );
 				$update_result = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'order_id' => $data['order_id'] ) );
 				$message	   = 'Order has been updated successfully.';
 				if ( false === $update_result ) {

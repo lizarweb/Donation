@@ -4,6 +4,30 @@ defined( 'ABSPATH' ) || die();
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Helper.php';
 
 class DNM_Config {
+
+	public static function save_general_settings() {
+		check_ajax_referer( 'dnm_save_general_settings', 'nonce' );
+		$currency     = sanitize_text_field( $_POST['currency'] );
+		$date_format  = sanitize_text_field( $_POST['date_format'] );
+		$prefix        = sanitize_text_field( $_POST['prefix'] );
+	
+		// Handle the logo upload
+		if(isset($_FILES['logo']) && $_FILES['logo']['error'] == 0){
+			$uploaded_file = $_FILES['logo'];
+			$upload_overrides = array( 'test_form' => false );
+			$move_file = wp_handle_upload( $uploaded_file, $upload_overrides );
+			if ( $move_file && ! isset( $move_file['error'] ) ) {
+				$logo = $move_file['url'];
+				update_option( 'dnm_logo', $logo );
+			}
+		}
+	
+		update_option( 'dnm_currency', $currency );
+		update_option( 'dnm_date_format', $date_format );
+		update_option( 'dnm_prefix', $prefix );
+		wp_send_json_success( array( 'message' => __( 'Settings saved successfully', 'donation' ) ) );
+	}
+
 	public static function get_default_date_format() {
 		return 'd-m-Y';
 	}
@@ -42,6 +66,9 @@ class DNM_Config {
 	}
 
 	public static function date_format_text( $date ) {
+		if (empty($date) || !strtotime($date)) {
+			return '-';
+		}
 		return date( self::date_format(), strtotime( $date ) );
 	}
 }

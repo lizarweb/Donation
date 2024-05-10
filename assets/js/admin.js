@@ -9,7 +9,7 @@
                 serverSide: true,
                 responsive: true,
                 paging: true,
-                pageLength: 10,
+                // pageLength: 25,
                 ajax: {
                     url: ajaxurl,
                     type: 'POST',
@@ -23,38 +23,39 @@
 
         // Function to handle form submission
         function handleFormSubmit(formId) {
-            var form = $(formId);
+            const form = $(formId);
             form.on('submit', function (e) {
                 e.preventDefault();
+                const formData = new FormData(this);
                 $.ajax({
                     url: form.attr('action'),
                     type: form.attr('method'),
-                    data: form.serialize(),
+                    data: formData,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,  // tell jQuery not to set contentType
                     success: function (response) {
                         form.parent().find('.alert').remove();
                         if (response.success) {
-                            // If the request is successful, remove any existing alert and show the success message
                             $('input').removeClass('is-invalid is-valid');
                             $('.invalid-feedback').remove();
-                            form.parent().prepend('<div class="alert alert-success">' + response.data.message + '</div>');
+                            form.parent().prepend(`<div class="alert alert-success">${response.data.message}</div>`);
                         } else {
-                            var errors = response.data; // Access the 'data' property of the response
+                            const errors = response.data;
                             if (errors) {
                                 $('input').removeClass('is-invalid is-valid');
                                 $('.invalid-feedback').remove();
                                 $.each(errors, function (key, value) {
-                                    $('#' + key).removeClass('is-valid').addClass('is-invalid'); // Add invalid class to the input
-                                    var feedbackId = key + 'Feedback';
-                                    $('#' + feedbackId).remove(); // Remove old messages
-                                    $('#' + key).after('<div id="' + feedbackId + '" class="invalid-feedback">' + value + '</div>'); // Add new messages
+                                    $(`#${key}`).removeClass('is-valid').addClass('is-invalid');
+                                    const feedbackId = `${key}Feedback`;
+                                    $(`#${feedbackId}`).remove();
+                                    $(`#${key}`).after(`<div id="${feedbackId}" class="invalid-feedback">${value}</div>`);
                                 });
-                                // Add an alert at the top of the form with the error message
-                                form.parent().prepend('<div class="alert alert-danger">' + response.data.message + '</div>');
+                                form.parent().prepend(`<div class="alert alert-danger">${response.data.message}</div>`);
                             }
                         }
                     },
-                    error: function (response) {
-                        console.log(response);
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.error(`Request failed: ${textStatus}`);
                     }
                 });
             });

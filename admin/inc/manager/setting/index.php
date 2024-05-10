@@ -9,8 +9,11 @@ $active_currency = DNM_Config::get_currency();
 $date_formats       = DNM_Helper::date_formats();
 $active_date_format = DNM_Config::date_format();
 
-$prefix = DNM_Helper::get_prefix();
+$prefix  = DNM_Helper::get_prefix();
 $logo   = DNM_Helper::get_logo();
+
+
+
 ?>
 
 <div class="container-fluid">
@@ -47,7 +50,9 @@ $logo   = DNM_Helper::get_logo();
 						<div class="tab-content" id="v-pills-tabContent">
 							<div class="tab-pane fade show active" id="v-pills-general" role="tabpanel" aria-labelledby="v-pills-general-tab">
 								<!-- General settings form -->
-								<form>
+								<form action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" method="post" id="dnm-save-settings-form" enctype="multipart/form-data" >
+									<?php wp_nonce_field( 'dnm_save_general_settings', 'nonce' ); ?>
+									<input type="hidden" name="action" value="dnm-save-general-settings">
 									<h1 class="p-2 mb-4"><?php echo __( 'General Settings', 'donation' ); ?></h1>
 									<div class="container">
 										<div class="row">
@@ -71,7 +76,7 @@ $logo   = DNM_Helper::get_logo();
 												</div>
 												<div class="mb-3">
 													<label for="order_id_prefix" class="form-label"><?php echo __( 'Order ID Prefix', 'donation' ); ?></label>
-													<input name="order_id_prefix" type="text" class="form-control" id="order_id_prefix" value="<?php echo esc_attr( $prefix ); ?>">
+													<input name="prefix" type="text" class="form-control" id="order_id_prefix" value="<?php echo esc_attr( $prefix ); ?>">
 												</div>
 
 												<div class="mb-3">
@@ -86,7 +91,7 @@ $logo   = DNM_Helper::get_logo();
 												</div>
 											</div>
 										</div>
-										<button type="button" class="btn btn-dark"><?php echo __( 'Save General Settings', 'donation' ); ?></button>
+										<button type="submit" class="btn btn-dark" id="dnm-save-settings-btn"><?php echo __( 'Save General Settings', 'donation' ); ?></button>
 									</div>
 								</form>
 							</div>
