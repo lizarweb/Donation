@@ -1,0 +1,101 @@
+# Copyright (C) 2024 Weblizar
+# This file is distributed under the same license as the Donation plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Donation 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/donation\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-05-10T19:20:10+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.9.0\n"
+"X-Domain: donation\n"
+
+#. Plugin Name of the plugin
+#. Description of the plugin
+#: admin/inc/DNM_Menu.php:10
+msgid "Donation"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "#"
+msgstr ""
+
+#. Author of the plugin
+msgid "Weblizar"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://weblizar.com"
+msgstr ""
+
+#: admin/inc/DNM_Menu.php:13
+msgid "Dashboard"
+msgstr ""
+
+#: admin/inc/DNM_Menu.php:16
+msgid "Orders"
+msgstr ""
+
+#: admin/inc/DNM_Menu.php:19
+#: admin/inc/manager/setting/index.php:22
+msgid "Settings"
+msgstr ""
+
+#: admin/inc/manager/dashboard/index.php:8
+msgid "Donation Statistics"
+msgstr ""
+
+#: admin/inc/manager/dashboard/index.php:9
+msgid "Your generous donation helps us continue our work"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:31
+#: admin/inc/manager/setting/index.php:56
+msgid "General Settings"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:34
+#: admin/inc/manager/setting/index.php:102
+msgid "Payment Settings"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:37
+#: admin/inc/manager/setting/index.php:119
+msgid "Shortcodes"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:61
+msgid "Currency"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:69
+msgid "Date Format"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:78
+msgid "Order ID Prefix"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:83
+msgid "Upload Logo"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:94
+msgid "Save General Settings"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:111
+msgid "Save Payment Settings"
+msgstr ""
+
+#: admin/inc/manager/setting/index.php:125
+msgid "Donation Registration Form Shortcode (Click To Copy)"
+msgstr ""
+
+#: includes/helpers/DNM_Config.php:28
+msgid "Settings saved successfully"
+msgstr ""
