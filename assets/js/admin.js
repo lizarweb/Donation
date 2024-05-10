@@ -9,7 +9,7 @@
                 serverSide: true,
                 responsive: true,
                 paging: true,
-                pageLength: 25,
+                pageLength: 10,
                 ajax: {
                     url: ajaxurl,
                     type: 'POST',
@@ -61,7 +61,33 @@
         }
 
         // Usage
-        handleFormSubmit('#dnm-save-order-form', 'Order saved successfully!', 'Error saving order.');
+        handleFormSubmit('#dnm-save-order-form');
+        handleFormSubmit('#dnm-save-settings-form');
+
+        // Delete Order
+        $(document).on('click', '.delete-order', function () {
+            var orderId = $(this).data('id');
+            var nonce = $(this).data('nonce');
+            if (confirm('Are you sure you want to delete this order?')) {
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'dnm-delete-order',
+                        order_id: orderId,
+                        nonce: nonce
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#orders_table').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    }
+                });
+            }
+        });
 
         // Copy shortcode to clipboard
         function copyToClipboard(text) {

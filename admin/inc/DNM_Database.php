@@ -112,4 +112,15 @@ class DNM_Database {
 		}
 		return $id;
 	}
+
+	public static function updateTable( $table, $data, $where ) {
+		global $wpdb;
+		$result = $wpdb->update( $table, $data, $where );
+
+		if ( false === $result ) {
+			throw new Exception( 'Failed to update data in ' . $table );
+		}
+
+		return $result;
+	}
 }

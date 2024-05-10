@@ -18,7 +18,7 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                 </div>
             </nav>
             <div class="table-responsive small">
-                <table id="orders_table" class="table table-sm table-striped" style="width:100%">
+                <table id="orders_table" class="table table table-striped display" style="width:100%">
                     <thead>
                         <tr>
                             <th>#ID</th>
@@ -28,6 +28,8 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                             <th>Amount</th>
                             <th>Payment method</th>
                             <th>Created at</th>
+                            <th>Updated at</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody> </tbody>
@@ -40,6 +42,8 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                             <th>Amount</th>
                             <th>Payment method</th>
                             <th>Created at</th>
+                            <th>Updated at</th>
+                            <th>Actions</th>
                         </tr>
                     </tfoot>
                 </table>

@@ -242,18 +242,32 @@ class DNM_Helper {
 		return $page_url;
 	}
 
-	public static function validate_field($field, $error_message) {
-		if (empty($field)) {
-			return $error_message;
-		}
-		return null;
-	}
-
 	public static function get_post_value( $key, $default = null, $sanitize_callback = null ) {
 		$value = isset( $_POST[ $key ] ) ? $_POST[ $key ] : $default;
 		if ( $sanitize_callback && function_exists( $sanitize_callback ) ) {
 			$value = $sanitize_callback( $value );
 		}
 		return $value;
+	}
+
+	public static function validate_fields($fields, $data, $exclude = array()) {
+		$errors = array();
+	
+		foreach ($fields as $field => $value) {
+			if (!in_array($field, $exclude) && empty($data[$field])) {
+				$errors[$field] = ucfirst($field) . ' is required.';
+			}
+		}
+	
+		return $errors;
+	}
+
+	public static function generate_form_field($id, $label, $type, $value) {
+		return <<<HTML
+		<div class="mb-3">
+			<label for="$id" class="form-label">$label:</label>
+			<input type="$type" id="$id" name="$id" class="form-control" value="$value">
+		</div>
+		HTML;
 	}
 }

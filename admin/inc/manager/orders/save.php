@@ -1,50 +1,50 @@
 <?php
 defined( 'ABSPATH' ) || die();
 require_once DNM_PLUGIN_DIR_PATH . '/includes/helpers/DNM_Helper.php';
+$page_url = esc_url( DNM_Helper::get_page_url( 'donation-orders' ) );
 
-$page_url = DNM_Helper::get_page_url('donation-orders');
+$order_data = array(
+	'order_id'       => 0,
+	'name'           => '',
+	'email'          => '',
+	'phone'          => '',
+	'address'        => '',
+	'amount'         => '',
+	'payment_method' => '',
+);
 
-$order_id = 0;
+if ( isset( $_GET['id'] ) ) {
+	$order_id = absint( $_GET['id'] );
+	if ( 0 !== $order_id ) {
+		$order = DNM_Order::get_order( $order_id );
+		if ( ! $order ) {
+			wp_safe_redirect( $page_url );
+			exit;
+		}
+		foreach ( $order_data as $key => $value ) {
+			$order_data[ $key ] = sanitize_text_field( $order->$key );
+		}
+	}
+}
 ?>
 <div class="container py-5">
-    <div class="row">
-        <div class="col-lg-6 mx-auto">
-            <form action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" method="post" id="dnm-save-order-form">
-                <input type="hidden" name="action" value="dnm_save_order">
-                <input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'dnm_save_order' ) ); ?>">
-                <input type="hidden" name="order_id" id="order_id" value="<?php echo esc_attr( $order_id ); ?>">
-                <h2 class="mb-4">Order Form</h2>
-
-                <!-- Customer Fields -->
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name:</label>
-                    <input type="text" id="name" name="name" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email:</label>
-                    <input type="email" id="email" name="email" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone:</label>
-                    <input type="text" id="phone" name="phone" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address:</label>
-                    <input type="text" id="address" name="address" class="form-control">
-                </div>
-
-                <!-- Order Fields -->
-                <div class="mb-3">
-                    <label for="amount" class="form-label">Amount:</label>
-                    <input type="number" id="amount" name="amount" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label for="payment_method" class="form-label">Payment Method:</label>
-                    <input type="text" id="payment_method" name="payment_method" class="form-control">
-                </div>
-
-                <button type="submit" class="btn btn-dark" id="dnm-save-order-btn">Submit</button>
-            </form>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-lg-6 mx-auto">
+			<form action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" method="post" id="dnm-save-order-form">
+				<?php wp_nonce_field( 'dnm_save_order', 'nonce' ); ?>
+				<input type="hidden" name="action" value="dnm-save-order">
+				<input type="hidden" name="order_id" id="order_id" value="<?php echo esc_attr( $order_data['order_id'] ); ?>">
+				<h2 class="mb-4">Add New Order</h2>
+				<?php
+				echo DNM_Helper::generate_form_field( 'name', 'Name', 'text', $order_data['name'] );
+				echo DNM_Helper::generate_form_field( 'email', 'Email', 'email', $order_data['email'] );
+				echo DNM_Helper::generate_form_field( 'phone', 'Phone', 'text', $order_data['phone'] );
+				echo DNM_Helper::generate_form_field( 'address', 'Address', 'text', $order_data['address'] );
+				echo DNM_Helper::generate_form_field( 'amount', 'Amount', 'number', $order_data['amount'] );
+				echo DNM_Helper::generate_form_field( 'payment_method', 'Payment Method', 'text', $order_data['payment_method'] );
+				?>
+				<button type="submit" class="btn btn-dark" id="dnm-save-order-btn">Submit</button>
+			</form>
+		</div>
+	</div>
 </div>
