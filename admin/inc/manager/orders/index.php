@@ -26,9 +26,9 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Amount</th>
-                            <th>Payment method</th>
                             <th>Created at</th>
                             <th>Updated at</th>
+                            <th>Payment method</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -40,9 +40,9 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Amount</th>
-                            <th>Payment method</th>
                             <th>Created at</th>
                             <th>Updated at</th>
+                            <th>Payment method</th>
                             <th>Actions</th>
                         </tr>
                     </tfoot>

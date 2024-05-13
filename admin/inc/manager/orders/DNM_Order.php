@@ -35,15 +35,18 @@ class DNM_Order {
 		if ( $data ) {
 			foreach ( $data as $order ) {
 				$orders[] = array(
-					DNM_Helper::get_prefix() . $order->order_id,
+					'<strong>' . DNM_Helper::get_prefix() . $order->order_id . '</strong>',
 					$order->name,
-					$order->email,
+					'<a href="mailto:' . $order->email . '">' . $order->email . '</a>',
 					$order->phone,
-					DNM_Config::get_amount_text( $order->amount ),
-					$order->payment_method ? $order->payment_method : 'N/A',
+					'<strong>' . DNM_Config::get_amount_text( $order->amount ) . '</strong>',
 					DNM_Config::date_format_text( $order->created_at ),
-					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : 'N/A',
-					' <a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a> <button class="btn btn-sm btn-outline-secondary delete-order" data-id="' . $order->ID . '" data-nonce="' . wp_create_nonce('dnm_delete_order') . '"><i class="bi bi-trash-fill"></i></button>',
+					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
+					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
+					'<div class="btn-group" role="group" aria-label="Basic example">
+						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
+						<button class="btn btn-sm btn-outline-danger delete-order" data-id="' . $order->ID . '" data-nonce="' . wp_create_nonce('dnm_delete_order') . '"><i class="bi bi-trash-fill"></i></button>
+					</div>',
 				);
 			}
 			$response = array(

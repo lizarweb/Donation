@@ -130,5 +130,22 @@ input[type=checkbox], input[type=radio] {
     margin: 0rem .25rem 0 0;
 }
 
+.card{
+  max-width: 960px;
+}
+
+@media print {
+  body * {
+      visibility: hidden;
+  }
+  #printableArea, #printableArea * {
+      visibility: visible;
+  }
+  #printableArea {
+      position: absolute;
+      left: 0;
+      top: 0;
+  }
+}
 
 
