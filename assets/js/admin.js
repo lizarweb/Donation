@@ -64,6 +64,7 @@
         // Usage
         handleFormSubmit('#dnm-save-order-form');
         handleFormSubmit('#dnm-save-settings-form');
+        handleFormSubmit('#dnm-save-payment-settings-form');
 
         // Delete Order
         $(document).on('click', '.delete-order', function () {

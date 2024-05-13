@@ -28,6 +28,55 @@ class DNM_Config {
 		wp_send_json_success( array( 'message' => __( 'Settings saved successfully', 'donation' ) ) );
 	}
 
+	public static function save_payment_settings() {
+		// Check if the nonce is valid
+		if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'dnm_save_payment_settings')) {
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'donation' ) ) );
+			return;
+		}
+		
+		$phone_pay_enable      = isset( $_POST['phone_pay_enable'] ) ? 1 : 0;
+		$phone_pay_mode        = sanitize_text_field( $_POST['phone_pay_mode'] );
+		$phone_pay_merchant_id = sanitize_text_field( $_POST['phone_pay_merchant_id'] );
+		$phone_pay_salt_key    = sanitize_text_field( $_POST['phone_pay_salt_key'] );
+		$phone_pay_salt_index  = sanitize_text_field( $_POST['phone_pay_salt_index'] );
+	
+		$payment_data = array(
+			'option_name' => 'phone_pay_settings',
+			'option_value' => maybe_serialize(array(
+				'phone_pay_enable'      => $phone_pay_enable,
+				'phone_pay_mode'        => $phone_pay_mode,
+				'phone_pay_merchant_id' => $phone_pay_merchant_id,
+				'phone_pay_salt_key'    => $phone_pay_salt_key,
+				'phone_pay_salt_index'  => $phone_pay_salt_index,
+			)),
+			'autoload' => 'yes'
+		);
+	
+		global $wpdb;
+		 // Check if the settings already exist
+		 $existing = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".DNM_SETTINGS." WHERE option_name = %s", 'phone_pay_settings'));
+	
+		if ($existing) {
+			// If the settings exist, update them
+			$wpdb->update(DNM_SETTINGS, $payment_data, array('ID' => $existing->ID));
+		} else {
+			// If the settings don't exist, insert a new row
+			$wpdb->insert(DNM_SETTINGS, $payment_data);
+		}
+	
+		wp_send_json_success( array( 'message' => __( 'Settings saved successfully', 'donation' ) ) );
+	}
+
+	public static function get_phone_pay_settings() {
+		global $wpdb;
+		$phone_pay_settings = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".DNM_SETTINGS." WHERE option_name = %s", 'phone_pay_settings'));
+		if ($phone_pay_settings) {
+			$phone_pay_settings = maybe_unserialize($phone_pay_settings->option_value);
+		}
+		return $phone_pay_settings;
+	}
+
 	public static function get_default_date_format() {
 		return 'd-m-Y';
 	}
