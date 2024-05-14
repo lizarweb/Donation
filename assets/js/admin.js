@@ -19,7 +19,7 @@
         }
         // Fetch Orders
         initDataTables($('#orders_table'), { action: 'dnm-fetch-orders' });
-
+        initDataTables($('#custom_orders_table'), { action: 'dnm-fetch-custom-orders' });
 
         // Function to handle form submission
         function handleFormSubmit(formId) {
@@ -50,7 +50,8 @@
                                     $(`#${feedbackId}`).remove();
                                     $(`#${key}`).after(`<div id="${feedbackId}" class="invalid-feedback">${value}</div>`);
                                 });
-                                form.parent().prepend(`<div class="alert alert-danger">${response.data.message}</div>`);
+                                // form.parent().prepend(`<div class="alert alert-danger">${response.data}</div>`);
+                                console.error(response.data);
                             }
                         }
                     },

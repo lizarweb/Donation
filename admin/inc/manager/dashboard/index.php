@@ -1,5 +1,14 @@
 <?php 
-// Dashboard Page
+defined( 'ABSPATH' ) || die();
+
+require_once DNM_PLUGIN_DIR_PATH . 'includes/constants.php';
+
+require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/orders/DNM_Order.php';
+
+// get Fixed orders count
+$fixed_orders = DNM_Order::get_orders_count( '11000' );
+$custom_orders = DNM_Order::get_orders_count( 'custom' );
+$customers = DNM_Order::get_customers_count();
 ?>
 <div class="container-fluid">
   <section id="minimal-statistics">
@@ -15,11 +24,11 @@
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h3 class="card-title">278</h3>
-                <p class="card-text">New Posts</p>
+                <h3 class="card-title"><?php echo $fixed_orders; ?></h3>
+                <p class="card-text">Fixed Donations</p>
               </div>
               <div>
-                <i class="bi bi-alarm text-danger fs-3"></i>
+                <i class="bi bi-cash-coin text-danger fs-3"></i>
               </div>
             </div>
           </div>
@@ -30,11 +39,11 @@
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h3 class="card-title">156</h3>
-                <p class="card-text">New Comments</p>
+                <h3 class="card-title"><?php echo $custom_orders; ?></h3>
+                <p class="card-text">Custom Donations</p>
               </div>
               <div>
-                <i class="bi bi-chat-dots text-success fs-3"></i>
+                <i class="bi bi-gift text-success fs-3"></i>
               </div>
             </div>
           </div>
@@ -45,11 +54,11 @@
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h3 class="card-title">64.89 %</h3>
-                <p class="card-text">Bounce Rate</p>
+                <h3 class="card-title"><?php  echo $customers;?></h3>
+                <p class="card-text">Users</p>
               </div>
               <div>
-                <i class="bi bi-graph-up text-warning fs-3"></i>
+                <i class="bi bi-people text-warning fs-3"></i>
               </div>
             </div>
           </div>
@@ -61,18 +70,15 @@
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
                 <h3 class="card-title">423</h3>
-                <p class="card-text">Total Visits</p>
+                <p class="card-text">References</p>
               </div>
               <div>
-                <i class="bi bi-cursor text-info fs-3"></i>
+                <i class="bi bi-bookmarks text-info fs-3"></i>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </section>
-
-
 </div>

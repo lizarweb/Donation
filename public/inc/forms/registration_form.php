@@ -10,6 +10,7 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
             <form action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" method="post" id="dnm-registration-form">
                 <?php wp_nonce_field('dnm_registration', 'nonce'); ?>
                 <input type="hidden" name="action" value="dnm-registration">
+        
                 <div class="dnm-mb-3">
                     <label for="name" class="dnm-form-label"><?php echo __('Full Name', 'donation'); ?></label>
                     <input type="text" class="dnm-form-control" id="name" name="name" placeholder="<?php echo __('Enter Full Name Here', 'donation'); ?>" autocomplete="name">
@@ -23,13 +24,21 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
                     <input type="text" class="dnm-form-control" id="phone" name="phone" placeholder="<?php echo __('Enter Phone Number Here', 'donation'); ?>" autocomplete="tel">
                 </div>
                 <div class="dnm-mb-3">
+                    <label for="city" class="dnm-form-label"><?php echo __('City', 'donation'); ?></label>
+                    <input type="text" class="dnm-form-control" id="city" name="city" placeholder="<?php echo __('Enter City Here', 'donation'); ?>" autocomplete="address-level2">
+                </div>
+                <div class="dnm-mb-3">
+                    <label for="state" class="dnm-form-label"><?php echo __('State', 'donation'); ?></label>
+                    <input type="text" class="dnm-form-control" id="state" name="state" placeholder="<?php echo __('Enter State Here', 'donation'); ?>" autocomplete="address-level1">
+                </div>
+                <div class="dnm-mb-3">
                     <label for="address" class="dnm-form-label"><?php echo __('Address', 'donation'); ?></label>
                     <textarea class="dnm-form-control" id="address" name="address" placeholder="<?php echo __('Enter Address Here', 'donation'); ?>" autocomplete="street-address"></textarea>
                 </div>
                 <div class="dnm-mb-3">
                     <label for="amount" class="dnm-form-label"><?php echo __('Amount', 'donation'); ?></label>
                     <div class="dnm-form-control dnm-mb-3">
-                        <input type="radio" id="amount_11000" name="type" value="11000">
+                        <input type="radio" id="amount_11000" name="type" value="11000" checked>
                         <label for="amount_11000"><?php esc_attr_e(DNM_Config::get_amount_text(11000)); ?></label>
                         <input type="radio" id="amount_custom" name="type" value="custom">
                         <label for="amount_custom"><?php echo __('Custom', 'donation'); ?></label>

@@ -20,7 +20,7 @@ class DNM_Shortcode {
     }
 
     public static function enqueue_dnm_assets() {
-        // wp_enqueue_style( 'dnm-bootstrap', DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css', array(), DNM_VERSION );
+        // wp_enqueue_style( 'dnm-bootstrap', DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css', array(), DNM_VERSION );s
         // wp_enqueue_style( 'dnm-bootstrap-icons', DNM_PLUGIN_URL . '/assets/css/bootstrap-icons.min.css', array(), DNM_VERSION );
         wp_enqueue_style( 'dnm-public-css', DNM_PLUGIN_URL . '/assets/css/public.css', array(), DNM_VERSION );
 

@@ -13,8 +13,11 @@ class Dnm_menu {
 		$dashboard_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Dashboard', 'donation' ), esc_html__( 'Dashboard', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_DASHBOARD, array( 'dnm_menu', 'donation_dash' ) );
 		self::add_admin_print_styles( $dashboard_submenu );
 
-		$orders_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Orders', 'donation' ), esc_html__( 'Orders', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_ORDERS_PAGE, array( 'dnm_menu', 'donation_orders' ) );
+		$orders_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Fixed Orders', 'donation' ), esc_html__( 'Fixed Orders', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_ORDERS_PAGE, array( 'dnm_menu', 'donation_orders' ) );
 		self::add_admin_print_styles( $orders_submenu );
+
+		$orders_custom_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Custom Orders', 'donation' ), esc_html__( 'Custom Orders', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_CUSTOM_ORDERS_PAGE, array( 'dnm_menu', 'donation_custom_orders' ) );
+		self::add_admin_print_styles( $orders_custom_submenu );
 
 		$setting_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Settings', 'donation' ), esc_html__( 'Settings', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_SETTING_PAGE, array( 'dnm_menu', 'donation_setting' ) );
 		self::add_admin_print_styles( $setting_submenu );
@@ -47,6 +50,11 @@ class Dnm_menu {
 	// Orders.
 	public static function donation_orders() {
 		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/orders/route.php';
+	}
+
+	// Custom Orders.
+	public static function donation_custom_orders() {
+		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/Custom-orders/route.php';
 	}
 
 	// Setting.

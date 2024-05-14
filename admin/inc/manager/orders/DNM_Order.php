@@ -19,10 +19,11 @@ class DNM_Order {
 		$limit  = $limit;
 
 		$query = 'SELECT o.ID, o.order_id, o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
-		  			INNER JOIN ' . DNM_CUSTOMERS . ' as c
-		  			ON o.customer_id = c.ID';
+            INNER JOIN ' . DNM_CUSTOMERS . ' as c
+            ON o.customer_id = c.ID WHERE o.type = "11000"';
+
 		if ( $search ) {
-			$query .= " WHERE c.name LIKE '%{$search}%' OR c.email LIKE '%{$search}%' OR c.phone LIKE '%{$search}%' OR o.amount LIKE '%{$search}%' OR DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') LIKE '%{$search}%'";
+			$query .= " AND (c.name LIKE '%{$search}%' OR c.email LIKE '%{$search}%' OR c.phone LIKE '%{$search}%' OR o.amount LIKE '%{$search}%' OR DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') LIKE '%{$search}%')";
 		}
 
 		$total_query   = $query;
@@ -45,7 +46,64 @@ class DNM_Order {
 					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
-						<button class="btn btn-sm btn-outline-danger delete-order" data-id="' . $order->ID . '" data-nonce="' . wp_create_nonce('dnm_delete_order') . '"><i class="bi bi-trash-fill"></i></button>
+						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye-fill"></i></a>
+						<button class="btn btn-sm btn-outline-danger delete-order" data-id="' . $order->ID . '" data-nonce="' . wp_create_nonce( 'dnm_delete_order' ) . '"><i class="bi bi-trash-fill"></i></button>
+					</div>',
+				);
+			}
+			$response = array(
+				'draw'            => intval( $_POST['draw'] ),
+				'recordsTotal'    => intval( $total_records ),
+				'recordsFiltered' => intval( $total_records ),
+				'data'            => $orders,
+			);
+			echo wp_json_encode( $response );
+			die;
+		}
+	}
+
+	public static function fetch_custom_orders() {
+		global $wpdb;
+		$response = array();
+		$limit    = isset( $_POST['length'] ) ? intval( $_POST['length'] ) : 25;
+		$start    = isset( $_POST['start'] ) ? intval( $_POST['start'] ) : 0;
+		$order    = isset( $_POST['order'] ) ? intval( $_POST['order'][0]['column'] ) : 0;
+		$dir      = isset( $_POST['order'] ) ? sanitize_text_field( $_POST['order'][0]['dir'] ) : 'desc';
+		$search   = isset( $_POST['search'] ) ? esc_sql( $_POST['search']['value'] ) : '';
+
+		$offset = $start;
+		$limit  = $limit;
+
+		$query = 'SELECT o.ID, o.order_id, o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
+            INNER JOIN ' . DNM_CUSTOMERS . ' as c
+            ON o.customer_id = c.ID WHERE o.type = "custom"';
+
+		if ( $search ) {
+			$query .= " AND (c.name LIKE '%{$search}%' OR c.email LIKE '%{$search}%' OR c.phone LIKE '%{$search}%' OR o.amount LIKE '%{$search}%' OR DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') LIKE '%{$search}%')";
+		}
+
+		$total_query   = $query;
+		$total_data    = $wpdb->get_results( $total_query );
+		$total_records = count( $total_data );
+		$query        .= " ORDER BY o.id {$dir} LIMIT {$offset}, {$limit}";
+		$data          = $wpdb->get_results( $query );
+		$orders        = array();
+
+		if ( $data ) {
+			foreach ( $data as $order ) {
+				$orders[] = array(
+					'<strong>' . DNM_Helper::get_prefix() . $order->order_id . '</strong>',
+					$order->name,
+					'<a href="mailto:' . $order->email . '">' . $order->email . '</a>',
+					$order->phone,
+					'<strong>' . DNM_Config::get_amount_text( $order->amount ) . '</strong>',
+					DNM_Config::date_format_text( $order->created_at ),
+					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
+					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
+					'<div class="btn-group" role="group" aria-label="Basic example">
+						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
+						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye-fill"></i></a>
+						<button class="btn btn-sm btn-outline-danger delete-order" data-id="' . $order->ID . '" data-nonce="' . wp_create_nonce( 'dnm_delete_order' ) . '"><i class="bi bi-trash-fill"></i></button>
 					</div>',
 				);
 			}
@@ -81,6 +139,14 @@ class DNM_Order {
 					'default' => '',
 					'filter'  => 'sanitize_text_field',
 				),
+				'city'           => array(
+					'default' => '',
+					'filter'  => 'sanitize_text_field',
+				),
+				'state'          => array(
+					'default' => '',
+					'filter'  => 'sanitize_text_field',
+				),
 				'address'        => array(
 					'default' => '',
 					'filter'  => 'sanitize_text_field',
@@ -97,73 +163,91 @@ class DNM_Order {
 
 			$data = self::get_post_values( $fields );
 
-			$errors = DNM_Helper::validate_fields( $fields, $data, array( 'order_id', 'address', 'payment_method' ) );
+			$errors = DNM_Helper::validate_fields( $fields, $data, array( 'order_id', 'address', 'payment_method', 'city', 'state' ) );
 
 			global $wpdb;
-			$customer_id = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM ' . DNM_CUSTOMERS . ' WHERE email = %s', $data['email'] ) );
 
-			if ( $customer_id && $data['order_id'] == 0 ) {
-				$errors['email'] = 'Email already exists. Please use another email.';
-			} else {
-				$customerData = array(
-					'name'       => $data['name'],
-					'email'      => $data['email'],
-					'phone'      => $data['phone'],
-					'address'    => $data['address'],
-					'created_at' => current_time( 'mysql' ),
+			try {
+				// Start transaction
+				$wpdb->query('START TRANSACTION');
+
+				$customer_id = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM ' . DNM_CUSTOMERS . ' WHERE email = %s', $data['email'] ) );
+
+				if ( $customer_id && $data['order_id'] == 0 ) {
+					$errors['email'] = 'Email already exists. Please use another email.';
+				} else {
+					$customerData = array(
+						'name'       => $data['name'],
+						'email'      => $data['email'],
+						'phone'      => $data['phone'],
+						'city'       => $data['city'],
+						'state'      => $data['state'],
+						'address'    => $data['address'],
+						'created_at' => current_time( 'mysql' ),
+					);
+
+					if ( $customer_id ) {
+						// Update the customer data
+						$customerData['updated_at'] = current_time( 'mysql' );
+						$update_result              = DNM_Database::updateTable( DNM_CUSTOMERS, $customerData, array( 'ID' => $customer_id ) );
+
+						if ( false === $update_result ) {
+							throw new Exception( 'Failed to update customer.' );
+						}
+					} else {
+						// Insert new customer data
+						$customer_id = DNM_Database::insertIntoTable( DNM_CUSTOMERS, $customerData );
+
+						if ( false === $customer_id ) {
+							throw new Exception( 'Failed to save customer.' );
+						}
+					}
+				}
+
+				if ( ! empty( $errors ) ) {
+					wp_send_json_error( $errors );
+				}
+
+				$order_data = array(
+					'order_id'       => $data['order_id'],
+					'type'           => $data['type'],
+					'payment_method' => $data['payment_method'],
+					'customer_id'    => $customer_id,
+					'amount'         => $data['amount'],
+					'label'          => $data['payment_method'],
+					'created_at'     => current_time( 'mysql' ),
 				);
 
-				if ( $customer_id ) {
-					// Update the customer data
-					$customerData['updated_at'] = current_time( 'mysql' );
-					$update_result = DNM_Database::updateTable( DNM_CUSTOMERS, $customerData, array( 'ID' => $customer_id ) );
-
+				if ( $data['order_id'] != 0 ) {
+					// Update the order data
+					$order_data['updated_at'] = current_time( 'mysql' );
+					$update_result            = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'order_id' => $data['order_id'] ) );
+					$message                  = 'Order has been updated successfully.';
 					if ( false === $update_result ) {
-						throw new Exception( 'Failed to update customer.' );
+						throw new Exception( 'Failed to update order.' );
 					}
 				} else {
-					// Insert new customer data
-					$customer_id = DNM_Database::insertIntoTable( DNM_CUSTOMERS, $customerData );
-
-					if ( false === $customer_id ) {
-						throw new Exception( 'Failed to save customer.' );
+					// Insert new order data
+					$last_order_id = self::getNextOrderId();
+					$order_data['order_id'] = $last_order_id;
+					$order_id = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
+					$message  = 'Order has been saved successfully.';
+					if ( ! $order_id ) {
+						throw new Exception( 'Failed to save order.' );
 					}
 				}
-			}
 
-			if ( ! empty( $errors ) ) {
-				self::handle_errors( $errors );
-			}
+				// If everything is fine, commit the transaction
+				$wpdb->query('COMMIT');
+			} catch (Exception $e) {
+				// An error occurred, rollback the transaction
+				$wpdb->query('ROLLBACK');
 
-			$order_data = array(
-				'order_id'       => $data['order_id'],
-				'type'           => 'donation',
-				'payment_method' => $data['payment_method'],
-				'customer_id'    => $customer_id,
-				'amount'         => $data['amount'],
-				'label'          => $data['payment_method'],
-				'created_at'     => current_time( 'mysql' ),
-			);
-
-			if ( $data['order_id'] != 0 ) {
-				// Update the order data
-				$order_data['updated_at'] = current_time( 'mysql' );
-				$update_result = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'order_id' => $data['order_id'] ) );
-				$message	   = 'Order has been updated successfully.';
-				if ( false === $update_result ) {
-					throw new Exception( 'Failed to update order.' );
-				}
-			} else {
-				// Insert new order data
-				$order_id = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
-				$message  = 'Order has been saved successfully.';
-				if ( ! $order_id ) {
-					throw new Exception( 'Failed to save order.' );
-				}
+				// Handle the error
+				self::handle_errors( array('message' => $e->getMessage()) );
 			}
 
 			wp_send_json_success( array( 'message' => $message ) );
-
 
 		} catch ( Exception $e ) {
 			self::handle_errors( array( 'message' => $e->getMessage() ) );
@@ -209,11 +293,31 @@ class DNM_Order {
 
 	public static function get_order( $order_id ) {
 		global $wpdb;
-		$query = 'SELECT o.ID, o.order_id, o.type, o.payment_method, c.name, c.email, c.phone, c.address, o.amount, o.created_at FROM ' . DNM_ORDERS . ' as o
+		$query = 'SELECT o.ID, o.order_id, o.type, o.payment_method, c.name, c.email, c.phone, c.city, c.reference_id, c.state, c.address, o.amount, o.created_at FROM ' . DNM_ORDERS . ' as o
 		  			INNER JOIN ' . DNM_CUSTOMERS . ' as c
 		  			ON o.customer_id = c.ID
 		  			WHERE o.ID = %d';
 		$order = $wpdb->get_row( $wpdb->prepare( $query, $order_id ) );
 		return $order;
+	}
+
+	public static function get_orders_count($type) {
+		global $wpdb;
+		$query = 'SELECT COUNT(*) FROM ' . DNM_ORDERS . ' WHERE type = %s';
+		$count = $wpdb->get_var($wpdb->prepare($query, $type));
+		return $count;
+	}
+
+	public static function get_customers_count() {
+		global $wpdb;
+		$query = 'SELECT COUNT(*) FROM ' . DNM_CUSTOMERS;
+		$count = $wpdb->get_var($query);
+		return $count;
+	}
+
+	public static function getNextOrderId() {
+		global $wpdb;
+		$last_order_id = $wpdb->get_var('SELECT order_id FROM ' . DNM_ORDERS . ' ORDER BY ID DESC LIMIT 1');
+		return $last_order_id + 1;
 	}
 }

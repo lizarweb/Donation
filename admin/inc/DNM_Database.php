@@ -15,9 +15,12 @@ class DNM_Database {
 		// Create Customer table.
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . DNM_CUSTOMERS . ' (
 		ID bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		reference_id bigint(20) UNSIGNED DEFAULT NULL,
 		name varchar(191) DEFAULT NULL,
 		email varchar(191) DEFAULT NULL,
 		phone varchar(191) DEFAULT NULL,
+		city varchar(191) DEFAULT NULL,
+		state varchar(191) DEFAULT NULL,
 		address text DEFAULT NULL,
 		created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at timestamp NULL DEFAULT NULL,

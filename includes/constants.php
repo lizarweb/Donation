@@ -14,6 +14,7 @@ define( 'DNM_SETTINGS', $wpdb->base_prefix . 'dnm_settings' );
 /* Menu page slugs for manager */
 define( 'DNM_DASHBOARD', 'donation-dash' );
 define( 'DNM_ORDERS_PAGE', 'donation-orders' );
+define( 'DNM_CUSTOM_ORDERS_PAGE', 'donation-custom-orders' );
 define( 'DNM_SETTING_PAGE', 'donation-settings' );
 
 

@@ -264,7 +264,7 @@ class DNM_Helper {
 
 	public static function generate_form_field($id, $label, $type, $value) {
 		return <<<HTML
-		<div class="mb-3">
+		<div class="mb-3 col-6'">
 			<label for="$id" class="form-label">$label:</label>
 			<input type="$type" id="$id" name="$id" class="form-control" value="$value">
 		</div>
