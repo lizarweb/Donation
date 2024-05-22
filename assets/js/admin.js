@@ -68,6 +68,7 @@
         handleFormSubmit('#dnm-save-settings-form');
         handleFormSubmit('#dnm-save-payment-settings-form');
         handleFormSubmit('#dnm-save-email-settings-form');
+        handleFormSubmit('#dnm-save-email-template-settings-form');
 
         // Delete Order
         $(document).on('click', '.delete-order', function () {

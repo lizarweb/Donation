@@ -16,3 +16,4 @@ add_action( 'wp_ajax_dnm-delete-order', array( 'DNM_Order', 'delete_order' ) );
 add_action( 'wp_ajax_dnm-save-general-settings', array( 'DNM_Config', 'save_general_settings' ) );
 add_action( 'wp_ajax_dnm-save-payment-settings', array( 'DNM_Config', 'save_payment_settings' ) );
 add_action( 'wp_ajax_dnm-save-email-settings', array( 'DNM_Config', 'save_email_settings' ) );
+add_action( 'wp_ajax_dnm-save-email-template-settings', array( 'DNM_Config', 'save_email_template_settings' ) );

@@ -156,6 +156,62 @@ class DNM_Config {
 		}
 	}
 
+	public static function save_email_template_settings() {
+		// Check if the nonce is valid
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'dnm_save_email_template_settings' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'donation' ) ) );
+			return;
+		}
+
+		$payment_canfirm_subject = sanitize_text_field( $_POST['payment_canfirm_subject'] ) ? sanitize_text_field( $_POST['payment_canfirm_subject'] ) : 'Payment Confirmation';
+		$payment_canfirm_body    = sanitize_text_field( $_POST['payment_canfirm_body'] ) ? sanitize_text_field( $_POST['payment_canfirm_body'] ) : 'Thank you for your payment. Your payment has been confirmed.';
+
+		$email_data = array(
+			'option_name'  => 'email_templates',
+			'option_value' => maybe_serialize(
+				array(
+					'payment_canfirm_subject' => $payment_canfirm_subject,
+					'payment_canfirm_body'    => $payment_canfirm_body,
+				)
+			),
+			'autoload'     => 'yes',
+		);
+
+		global $wpdb;
+
+		try {
+			$wpdb->query( 'BEGIN' );
+
+			// Check if the settings already exist
+			$existing = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'email_templates' ) );
+
+			if ( $existing ) {
+				// If the settings exist, update them
+				$result = $wpdb->update( DNM_SETTINGS, $email_data, array( 'ID' => $existing->ID ) );
+				if ( false === $result ) {
+					throw new Exception( 'Failed to update settings.' );
+				}
+			} else {
+				// If the settings don't exist, insert a new row
+				$result = $wpdb->insert( DNM_SETTINGS, $email_data );
+				if ( false === $result ) {
+					throw new Exception( 'Failed to insert settings.' );
+				}
+			}
+
+			// If everything is fine, commit the transaction
+			$wpdb->query( ' COMMIT' );
+
+			wp_send_json_success( array( 'message' => __( 'Settings saved successfully', 'donation' ) ) );
+		} catch ( Exception $e ) {
+			// An error occurred, rollback the transaction
+			$wpdb->query( 'ROLLBACK' );
+
+			// Handle the error
+			wp_die( $e->getMessage() );
+		}
+	}
+
 	public static function get_phone_pay_settings() {
 		global $wpdb;
 		$phone_pay_settings = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'phone_pay_settings' ) );
@@ -165,14 +221,22 @@ class DNM_Config {
 		return $phone_pay_settings;
 	}
 
-	public static function get_email_settings(){
+	public static function get_email_settings() {
 		global $wpdb;
 		$email_settings = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'email_settings' ) );
 		if ( $email_settings ) {
 			$email_settings = maybe_unserialize( $email_settings->option_value );
 		}
 		return $email_settings;
-	
+	}
+
+	public static function get_email_templates() {
+		global $wpdb;
+		$email_templates = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'email_templates' ) );
+		if ( $email_templates ) {
+			$email_templates = maybe_unserialize( $email_templates->option_value );
+		}
+		return $email_templates;
 	}
 
 	public static function get_default_date_format() {

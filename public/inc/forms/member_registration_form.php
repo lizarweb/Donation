@@ -52,8 +52,8 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 						<label class="dnm-form-check-label" for="amount_501"><?php esc_attr_e(DNM_Config::get_amount_text(501)); ?></label>
 					</div>
 					<div class="dnm-form-check">
-						<input class="dnm-form-check-input" type="radio" id="amount_1100" name="amount" value="1100" checked>
-						<label class="dnm-form-check-label" for="amount_1100"><?php esc_attr_e(DNM_Config::get_amount_text(1100)); ?></label>
+						<input class="dnm-form-check-input" type="radio" id="amount_11000" name="amount" value="11000" checked>
+						<label class="dnm-form-check-label" for="amount_11000"><?php esc_attr_e(DNM_Config::get_amount_text(11000)); ?></label>
 					</div>
 				</div>
 

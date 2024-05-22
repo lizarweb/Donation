@@ -28,16 +28,19 @@ $email_enable = DNM_Config::get_email_settings();
 					<div class="card">
 						<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
 							<button class="nav-link active text-start" id="v-pills-general-tab" data-bs-toggle="pill" data-bs-target="#v-pills-general" type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">
-								<i class="bi bi-gear-fill"></i> <?php echo __('General Settings', 'donation'); ?>
+								<i class="bi bi-gear"></i> <?php echo __('General Settings', 'donation'); ?>
 							</button>
 							<button class="nav-link text-start" id="v-pills-payment-tab" data-bs-toggle="pill" data-bs-target="#v-pills-payment" type="button" role="tab" aria-controls="v-pills-payment" aria-selected="false">
-								<i class="bi bi-credit-card-fill"></i> <?php echo __('Payment Settings', 'donation'); ?>
+								<i class="bi bi-credit-card"></i> <?php echo __('Payment Settings', 'donation'); ?>
 							</button>
 							<button class="nav-link text-start" id="v-pills-email-tab" data-bs-toggle="pill" data-bs-target="#v-pills-email" type="button" role="tab" aria-controls="v-pills-email" aria-selected="false">
 								<i class="bi bi-envelope"></i> <?php echo __('Email Settings', 'donation'); ?>
 							</button>
+							<button class="nav-link text-start" id="v-pills-email-template-tab" data-bs-toggle="pill" data-bs-target="#v-pills-email-template" type="button" role="tab" aria-controls="v-pills-email-template" aria-selected="false">
+								<i class="bi bi-mailbox"></i> <?php echo __('Email Templates', 'donation'); ?>
+							</button>
 							<button class="nav-link text-start" id="v-pills-shortcodes-tab" data-bs-toggle="pill" data-bs-target="#v-pills-shortcodes" type="button" role="tab" aria-controls="v-pills-shortcodes" aria-selected="false">
-								<i class="bi bi-code-square"></i> <?php echo __('Shortcodes', 'donation'); ?>
+							<i class="bi bi-code-slash"></i> <?php echo __('Shortcodes', 'donation'); ?>
 							</button>
 						</div>
 					</div>
@@ -201,6 +204,77 @@ $email_enable = DNM_Config::get_email_settings();
 											</div>
 										</div>
 										<button type="submit" class="btn btn-dark" id="dnm-save-settings-btn"><?php echo __('Save Email Settings', 'donation'); ?></button>
+									</div>
+
+								</form>
+							</div>
+
+							<div class="tab-pane fade" id="v-pills-email-template" role="tabpanel" aria-labelledby="v-pills-email-template-tab">
+
+							<?php 
+							$email_tempates = DNM_Config::get_email_templates();
+
+							?>
+
+								<!-- Email settings form -->
+								<form action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" method="post" id="dnm-save-email-template-settings-form" enctype="multipart/form-data">
+									<?php wp_nonce_field('dnm_save_email_template_settings', 'nonce'); ?>
+									<input type="hidden" name="action" value="dnm-save-email-template-settings">
+									<h1 class="p-2 mb-4"><?php echo __('Email Templates', 'donation'); ?></h1>
+
+									<div class="container">
+										<div class="row mb-3">
+											<div class="col-md-12">
+												<div class="accordion" id="emailAccordion">
+													<div class="accordion-item">
+														<h2 class="accordion-header" id="headingOne">
+															<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+																Payment Confirmation Email
+															</button>
+														</h2>
+														<div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#emailAccordion">
+															<div class="accordion-body">
+																<form>
+																	<div class="mb-3">
+																		<label for="payment_canfirm_subject" class="form-label">Email Subject</label>
+																		<input type="text" class="form-control" id="payment_canfirm_subject" name="payment_canfirm_subject" value="<?php echo $email_tempates['payment_canfirm_subject'] ?>">
+																	</div>
+																	<div class="mb-3">
+																		<label for="payment_canfirm_body" class="form-label">Email Body</label>
+																		<textarea class="form-control" id="payment_canfirm_body" rows="3" name="payment_canfirm_body"><?php echo $email_tempates['payment_canfirm_body'] ?></textarea>
+																	</div>
+																</form>
+															</div>
+														</div>
+													</div>
+													<!-- <div class="accordion-item">
+														<h2 class="accordion-header" id="headingTwo">
+															<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+																Email Template 2
+															</button>
+														</h2>
+														<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#emailAccordion">
+															<div class="accordion-body">
+																<form>
+																	<div class="mb-3">
+																		<label for="emailSubject2" class="form-label">Email Subject</label>
+																		<input type="text" class="form-control" id="emailSubject2">
+																	</div>
+																	<div class="mb-3">
+																		<label for="emailBody2" class="form-label">Email Body</label>
+																		<textarea class="form-control" id="emailBody2" rows="3"></textarea>
+																	</div>
+																</form>
+															</div>
+														</div>
+													</div> -->
+												</div>
+											</div>
+											<div class="col-md-6">
+
+											</div>
+										</div>
+										<button type="submit" class="btn btn-dark" id="dnm-save-settings-btn"><?php echo __('Save Email Templates', 'donation'); ?></button>
 									</div>
 
 								</form>

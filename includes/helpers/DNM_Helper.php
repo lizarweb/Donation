@@ -301,12 +301,141 @@ class DNM_Helper {
 			}
 
 			// Check if reference_id is correct format
-			if ( !preg_match( '/^MP[0-9]{1,9}$/', $reference_id ) ) {
+			if ( ! preg_match( '/^MP[0-9]{1,9}$/', $reference_id ) ) {
 				$errors['reference_id'] = 'Reference ID should be in format MP123456';
 			}
-		
 		}
 
 		return $errors;
+	}
+
+
+	public static function create_subscription( $subscriptionId, $mobileNumber, $amount, $frequency = 'MONTHLY', $recurringCount = 12 ) {
+
+		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
+
+		// Your JSON payload
+		$data = array(
+			'merchantId'             => $phone_pay_settings['phone_pay_merchant_id'],
+			'merchantSubscriptionId' => $subscriptionId,
+			'merchantUserId'         => $phone_pay_settings['phone_pay_merchant_user_id'],
+			'authWorkflowType'       => 'PENNY_DROP',
+			'amountType'             => 'FIXED',
+			'amount'                 => $amount,
+			'frequency'              => $frequency,
+			'recurringCount'         => $recurringCount,
+			'mobileNumber'           => $mobileNumber,
+			'deviceContext'          => array(
+				'phonePeVersionCode' => 400922,
+			),
+		);
+
+		// Convert the JSON payload to Base64
+		$base64Payload = base64_encode( json_encode( $data ) );
+
+		// Your request
+		$request = array(
+			'request' => $base64Payload,
+		);
+
+		// Your salt key and index
+		$saltKey   = $phone_pay_settings['phone_pay_salt_key'];
+		$saltIndex = $phone_pay_settings['phone_pay_salt_index'];
+
+		// Calculate X-Verify
+		$xVerify = hash( 'sha256', $base64Payload . '/v3/recurring/subscription/create' . $saltKey ) . '###' . $saltIndex;
+
+		// Initialize cURL
+		$ch = curl_init();
+
+		// Set the options
+		curl_setopt( $ch, CURLOPT_URL, 'https://api-preprod.phonepe.com/apis/pg-sandbox/v3/recurring/subscription/create' );
+		curl_setopt( $ch, CURLOPT_POST, 1 );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $request ) );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
+			array(
+				'Content-Type: application/json',
+				'X-Verify: ' . $xVerify,
+			)
+		);
+
+		// Execute and get the response
+		$response = curl_exec( $ch );
+
+		// Close cURL
+		curl_close( $ch );
+
+		// Decode the response
+		$responseData = json_decode( $response, true );
+
+		// Check the response
+		if ( $responseData['success'] === true ) {
+			return array(
+				'state'          => $responseData['data']['state'],
+				'subscriptionId' => $responseData['data']['subscriptionId'],
+			);
+		} else {
+			return array(
+				'state'   => 'failed',
+				'message' => $responseData['message'],
+			);
+		}
+	}
+
+	public static function setup_mandate_or_accept_payment( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $deviceOS = 'ANDROID', $paymentType = 'UPI_COLLECT', $targetApp = 'com.phonepe.app' ) {
+		// Your JSON payload
+		$data = array(
+			'merchantId'        => $merchantId,
+			'merchantUserId'    => $merchantUserId,
+			'subscriptionId'    => $subscriptionId,
+			'authRequestId'     => $authRequestId,
+			'paymentInstrument' => array(
+				'type' => $paymentType,
+				'vpa'  => 'test-vpa@ybl',
+			),
+		);
+
+		// Convert the JSON payload to Base64
+		$base64Payload = base64_encode( json_encode( $data ) );
+
+		// Calculate X-Verify
+		$xVerify = hash( 'sha256', $base64Payload . '/v3/recurring/auth/init' . $saltKey ) . '###' . $saltIndex;
+
+		// Your request
+		$request = array(
+			'request' => $base64Payload,
+		);
+
+		// Set the headers
+		$headers = array(
+			'Content-Type: application/json',
+			'X-Verify: ' . $xVerify,
+			'X-CALLBACK-URL: ' . $callbackUrl,
+		);
+
+		// Initialize cURL
+		$ch = curl_init();
+
+		// Set the options
+		curl_setopt( $ch, CURLOPT_URL, 'https://api-preprod.phonepe.com/apis/pg-sandbox/v3/recurring/auth/init' );
+		curl_setopt( $ch, CURLOPT_POST, 1 );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $request ) );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+
+		// Execute and get the response
+		$response = curl_exec( $ch );
+
+		// Close cURL
+		curl_close( $ch );
+
+		// Decode the response
+		$responseData = json_decode( $response, true );
+
+		// Return the response
+		return $responseData;
 	}
 }
