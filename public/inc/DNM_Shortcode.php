@@ -20,6 +20,13 @@ class DNM_Shortcode {
 		return ob_get_clean();
 	}
 
+	public static function member_registration() {
+		self::enqueue_dnm_assets();
+		ob_start();
+		require_once DNM_PLUGIN_DIR_PATH . 'public/inc/forms/member_registration_form.php';
+		return ob_get_clean();
+	}
+
 	public static function payment_status() {
 		self::enqueue_dnm_assets();
 		ob_start();

@@ -237,7 +237,7 @@ class DNM_Helper {
 		}
 	}
 
-	public static function get_page_url($slug) {
+	public static function get_page_url( $slug ) {
 		$page_url = admin_url( "admin.php?page=$slug" );
 		return $page_url;
 	}
@@ -250,19 +250,19 @@ class DNM_Helper {
 		return $value;
 	}
 
-	public static function validate_fields($fields, $data, $exclude = array()) {
+	public static function validate_fields( $fields, $data, $exclude = array() ) {
 		$errors = array();
-	
-		foreach ($fields as $field => $value) {
-			if (!in_array($field, $exclude) && empty($data[$field])) {
-				$errors[$field] = ucfirst($field) . ' is required.';
+
+		foreach ( $fields as $field => $value ) {
+			if ( ! in_array( $field, $exclude ) && empty( $data[ $field ] ) ) {
+				$errors[ $field ] = ucfirst( $field ) . ' is required.';
 			}
 		}
-	
+
 		return $errors;
 	}
 
-	public static function generate_form_field($id, $label, $type, $value) {
+	public static function generate_form_field( $id, $label, $type, $value ) {
 		return <<<HTML
 		<div class="mb-3 col-6'">
 			<label for="$id" class="form-label">$label:</label>
@@ -275,5 +275,38 @@ class DNM_Helper {
 		global $wpdb;
 		$last_order_id = $wpdb->get_var( 'SELECT order_id FROM ' . DNM_ORDERS . ' ORDER BY ID DESC LIMIT 1' );
 		return $last_order_id + 1;
+	}
+
+	public static function validate_reference_id( $reference_id, $limit = null ) {
+		$errors = array();
+
+		// Remove 'MP' prefix from reference_id for checking in database
+		$reference_id_db = str_replace( 'MP', '', $reference_id );
+
+		// Check if reference_id exists in database
+		$reference_id_exists = DNM_Database::getRecord( DNM_CUSTOMERS, 'ID', $reference_id_db );
+
+		if ( ! $reference_id_exists ) {
+			$errors['reference_id'] = 'Reference ID does not exist';
+		} else {
+			// Reference ID exists, proceed with other checks
+
+			// Check if reference_id is used more than the limit. If yes, then return error.
+			if ( $limit !== null ) {
+				$reference_id_count = DNM_Database::getRecordCount( DNM_CUSTOMERS, 'reference_id', $reference_id );
+
+				if ( $reference_id_count >= $limit ) {
+					$errors['reference_id'] = 'Reference ID is already used ' . $limit . ' times';
+				}
+			}
+
+			// Check if reference_id is correct format
+			if ( !preg_match( '/^MP[0-9]{1,9}$/', $reference_id ) ) {
+				$errors['reference_id'] = 'Reference ID should be in format MP123456';
+			}
+		
+		}
+
+		return $errors;
 	}
 }

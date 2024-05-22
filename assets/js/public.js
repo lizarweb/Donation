@@ -48,6 +48,6 @@
 
     handleFormSubmit('#dnm-save-custom-registration-form');
     handleFormSubmit('#dnm-save-fixed-registration-form');
-
+    handleFormSubmit('#dnm-save-membership-registration-form');
 
 })(jQuery);
