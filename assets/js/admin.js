@@ -66,6 +66,7 @@
         handleFormSubmit('#dnm-save-order-form');
         handleFormSubmit('#dnm-save-settings-form');
         handleFormSubmit('#dnm-save-payment-settings-form');
+        handleFormSubmit('#dnm-save-email-settings-form');
 
         // Delete Order
         $(document).on('click', '.delete-order', function () {
@@ -170,5 +171,19 @@
             var shortCode = $(this).text();
             copyToClipboard(shortCode);
         });
+        $("#fixed_form").on("click", function () {
+            var shortCode = $(this).text();
+            copyToClipboard(shortCode);
+        });
+        $("#member_form").on("click", function () {
+            var shortCode = $(this).text();
+            copyToClipboard(shortCode);
+        });
+
+        $("#payment_status").on("click", function () {
+            var shortCode = $(this).text();
+            copyToClipboard(shortCode);
+        });
+
     });
 })(jQuery);

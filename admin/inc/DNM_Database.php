@@ -42,6 +42,7 @@ class DNM_Database {
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . DNM_ORDERS . ' (
 		ID bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		order_id bigint(20) UNSIGNED DEFAULT NULL,
+		transaction_id varchar(255) DEFAULT NULL,
 		type varchar(50) DEFAULT NULL,
 		payment_method varchar(50) DEFAULT NULL,
 		customer_id bigint(20) UNSIGNED DEFAULT NULL,
@@ -125,5 +126,17 @@ class DNM_Database {
 		}
 
 		return $result;
+	}
+
+	public static function getRecord($table, $column, $value) {
+		global $wpdb;
+		$record = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE ' . $column . ' = %s', $value ) );
+		return $record;
+	}
+
+	public static function getRecordCount($table, $column, $value) {
+		global $wpdb;
+		$record = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . $table . ' WHERE ' . $column . ' = %s', $value ) );
+		return $record;
 	}
 }

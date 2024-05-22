@@ -270,4 +270,10 @@ class DNM_Helper {
 		</div>
 		HTML;
 	}
+
+	public static function getNextOrderId() {
+		global $wpdb;
+		$last_order_id = $wpdb->get_var( 'SELECT order_id FROM ' . DNM_ORDERS . ' ORDER BY ID DESC LIMIT 1' );
+		return $last_order_id + 1;
+	}
 }

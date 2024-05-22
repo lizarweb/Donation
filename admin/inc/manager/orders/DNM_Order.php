@@ -18,12 +18,12 @@ class DNM_Order {
 		$offset = $start;
 		$limit  = $limit;
 
-		$query = 'SELECT o.ID, o.order_id, o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
+		$query = 'SELECT o.ID, o.order_id, o.transaction_id, c.reference_id, o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
             INNER JOIN ' . DNM_CUSTOMERS . ' as c
             ON o.customer_id = c.ID WHERE o.type = "11000"';
 
 		if ( $search ) {
-			$query .= " AND (c.name LIKE '%{$search}%' OR c.email LIKE '%{$search}%' OR c.phone LIKE '%{$search}%' OR o.amount LIKE '%{$search}%' OR DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') LIKE '%{$search}%')";
+			$query .= " AND (c.reference_id LIKE '%{$search}%' OR o.transaction_id LIKE '%{$search}%' OR c.name LIKE '%{$search}%' OR c.email LIKE '%{$search}%' OR c.phone LIKE '%{$search}%' OR o.amount LIKE '%{$search}%' OR DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') LIKE '%{$search}%')";
 		}
 
 		$total_query   = $query;
@@ -44,6 +44,8 @@ class DNM_Order {
 					DNM_Config::date_format_text( $order->created_at ),
 					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
 					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
+					$order->transaction_id ?  $order->transaction_id  : '-',
+					$order->reference_id ?  $order->reference_id  : '-',
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye-fill"></i></a>
@@ -74,12 +76,12 @@ class DNM_Order {
 		$offset = $start;
 		$limit  = $limit;
 
-		$query = 'SELECT o.ID, o.order_id, o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
+		$query = 'SELECT o.ID, o.order_id, o.transaction_id, o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
             INNER JOIN ' . DNM_CUSTOMERS . ' as c
             ON o.customer_id = c.ID WHERE o.type = "custom"';
 
 		if ( $search ) {
-			$query .= " AND (c.name LIKE '%{$search}%' OR c.email LIKE '%{$search}%' OR c.phone LIKE '%{$search}%' OR o.amount LIKE '%{$search}%' OR DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') LIKE '%{$search}%')";
+			$query .= " AND (c.name LIKE '%{$search}%' OR o.transaction_id LIKE '%{$search}%' OR c.email LIKE '%{$search}%' OR c.phone LIKE '%{$search}%' OR o.amount LIKE '%{$search}%' OR DATE_FORMAT(o.created_at, '%Y-%m-%d %H:%i:%s') LIKE '%{$search}%')";
 		}
 
 		$total_query   = $query;
@@ -100,6 +102,7 @@ class DNM_Order {
 					DNM_Config::date_format_text( $order->created_at ),
 					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
 					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
+					$order->transaction_id ?  $order->transaction_id  : '-',
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye-fill"></i></a>
@@ -159,6 +162,10 @@ class DNM_Order {
 					'default' => '',
 					'filter'  => 'sanitize_text_field',
 				),
+				'type'           => array(
+					'default' => 'custom',
+					'filter'  => 'sanitize_text_field',
+				),
 			);
 
 			$data = self::get_post_values( $fields );
@@ -168,14 +175,13 @@ class DNM_Order {
 			global $wpdb;
 
 			try {
-				// Start transaction
-				$wpdb->query('START TRANSACTION');
+				$wpdb->query( 'BEGIN' );
 
 				$customer_id = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM ' . DNM_CUSTOMERS . ' WHERE email = %s', $data['email'] ) );
 
-				if ( $customer_id && $data['order_id'] == 0 ) {
-					$errors['email'] = 'Email already exists. Please use another email.';
-				} else {
+				// if ( $customer_id && $data['order_id'] == 0 ) {
+				// 	$errors['email'] = 'Email already exists. Please use another email.';
+				// } else {
 					$customerData = array(
 						'name'       => $data['name'],
 						'email'      => $data['email'],
@@ -202,7 +208,7 @@ class DNM_Order {
 							throw new Exception( 'Failed to save customer.' );
 						}
 					}
-				}
+				// }
 
 				if ( ! empty( $errors ) ) {
 					wp_send_json_error( $errors );
@@ -220,6 +226,7 @@ class DNM_Order {
 
 				if ( $data['order_id'] != 0 ) {
 					// Update the order data
+					unset( $order_data['type'] );
 					$order_data['updated_at'] = current_time( 'mysql' );
 					$update_result            = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'order_id' => $data['order_id'] ) );
 					$message                  = 'Order has been updated successfully.';
@@ -228,23 +235,22 @@ class DNM_Order {
 					}
 				} else {
 					// Insert new order data
-					$last_order_id = self::getNextOrderId();
+					$last_order_id          = DNM_Helper::getNextOrderId();
 					$order_data['order_id'] = $last_order_id;
-					$order_id = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
-					$message  = 'Order has been saved successfully.';
+					$order_id               = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
+					$message                = 'Order has been saved successfully.';
 					if ( ! $order_id ) {
 						throw new Exception( 'Failed to save order.' );
 					}
 				}
 
-				// If everything is fine, commit the transaction
-				$wpdb->query('COMMIT');
-			} catch (Exception $e) {
-				// An error occurred, rollback the transaction
-				$wpdb->query('ROLLBACK');
+				$wpdb->query( 'COMMIT' );
+			} catch ( Exception $e ) {
+
+				$wpdb->query( 'ROLLBACK' );
 
 				// Handle the error
-				self::handle_errors( array('message' => $e->getMessage()) );
+				self::handle_errors( array( 'message' => $e->getMessage() ) );
 			}
 
 			wp_send_json_success( array( 'message' => $message ) );
@@ -301,23 +307,19 @@ class DNM_Order {
 		return $order;
 	}
 
-	public static function get_orders_count($type) {
+	public static function get_orders_count( $type ) {
 		global $wpdb;
 		$query = 'SELECT COUNT(*) FROM ' . DNM_ORDERS . ' WHERE type = %s';
-		$count = $wpdb->get_var($wpdb->prepare($query, $type));
+		$count = $wpdb->get_var( $wpdb->prepare( $query, $type ) );
 		return $count;
 	}
 
 	public static function get_customers_count() {
 		global $wpdb;
 		$query = 'SELECT COUNT(*) FROM ' . DNM_CUSTOMERS;
-		$count = $wpdb->get_var($query);
+		$count = $wpdb->get_var( $query );
 		return $count;
 	}
 
-	public static function getNextOrderId() {
-		global $wpdb;
-		$last_order_id = $wpdb->get_var('SELECT order_id FROM ' . DNM_ORDERS . ' ORDER BY ID DESC LIMIT 1');
-		return $last_order_id + 1;
-	}
+	
 }
