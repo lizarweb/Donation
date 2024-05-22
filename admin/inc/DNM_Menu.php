@@ -13,10 +13,13 @@ class Dnm_menu {
 		$dashboard_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Dashboard', 'donation' ), esc_html__( 'Dashboard', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_DASHBOARD, array( 'dnm_menu', 'donation_dash' ) );
 		self::add_admin_print_styles( $dashboard_submenu );
 
-		$orders_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Fixed Orders', 'donation' ), esc_html__( 'Fixed Orders', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_ORDERS_PAGE, array( 'dnm_menu', 'donation_orders' ) );
+		$orders_memberships_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Memberships', 'donation' ), esc_html__( 'Memberships', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_MEMBERSHIPS_ORDERS_PAGE, array( 'dnm_menu', 'donation_memberships_orders' ) );
+		self::add_admin_print_styles( $orders_memberships_submenu );
+
+		$orders_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Fixed', 'donation' ), esc_html__( 'Fixed', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_ORDERS_PAGE, array( 'dnm_menu', 'donation_orders' ) );
 		self::add_admin_print_styles( $orders_submenu );
 
-		$orders_custom_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Custom Orders', 'donation' ), esc_html__( 'Custom Orders', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_CUSTOM_ORDERS_PAGE, array( 'dnm_menu', 'donation_custom_orders' ) );
+		$orders_custom_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Custom', 'donation' ), esc_html__( 'Custom', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_CUSTOM_ORDERS_PAGE, array( 'dnm_menu', 'donation_custom_orders' ) );
 		self::add_admin_print_styles( $orders_custom_submenu );
 
 		$setting_submenu = add_submenu_page( DNM_DASHBOARD, esc_html__( 'Settings', 'donation' ), esc_html__( 'Settings', 'donation' ), DNM_ADMIN_CAPABILITY, DNM_SETTING_PAGE, array( 'dnm_menu', 'donation_setting' ) );
@@ -55,6 +58,11 @@ class Dnm_menu {
 	// Custom Orders.
 	public static function donation_custom_orders() {
 		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/Custom-orders/route.php';
+	}
+	
+	// Memberships Orders.
+	public static function donation_memberships_orders() {
+		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/memberships/route.php';
 	}
 
 	// Setting.

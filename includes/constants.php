@@ -15,6 +15,7 @@ define( 'DNM_SETTINGS', $wpdb->base_prefix . 'dnm_settings' );
 define( 'DNM_DASHBOARD', 'donation-dash' );
 define( 'DNM_ORDERS_PAGE', 'donation-orders' );
 define( 'DNM_CUSTOM_ORDERS_PAGE', 'donation-custom-orders' );
+define( 'DNM_MEMBERSHIPS_ORDERS_PAGE', 'donation-memberships-orders' );
 define( 'DNM_SETTING_PAGE', 'donation-settings' );
 
 

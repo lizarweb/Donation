@@ -9,6 +9,7 @@ add_action( 'admin_menu', array( 'DNM_Menu', 'create_menu' ) );
 
 add_action( 'wp_ajax_dnm-fetch-orders', array( 'DNM_Order', 'fetch_orders' ) );
 add_action( 'wp_ajax_dnm-fetch-custom-orders', array( 'DNM_Order', 'fetch_custom_orders' ) );
+add_action( 'wp_ajax_dnm-fetch-memberships-orders', array( 'DNM_Order', 'fetch_memberships_orders' ) );
 add_action( 'wp_ajax_dnm-save-order', array( 'DNM_Order', 'save_order' ) );
 add_action( 'wp_ajax_dnm-delete-order', array( 'DNM_Order', 'delete_order' ) );
 

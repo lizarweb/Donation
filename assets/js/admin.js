@@ -20,6 +20,7 @@
         // Fetch Orders
         initDataTables($('#orders_table'), { action: 'dnm-fetch-orders' });
         initDataTables($('#custom_orders_table'), { action: 'dnm-fetch-custom-orders' });
+        initDataTables($('#memberships_orders_table'), { action: 'dnm-fetch-memberships-orders' });
 
         // Function to handle form submission
         function handleFormSubmit(formId) {
