@@ -55,7 +55,7 @@ class DNM_Database {
 		) ENGINE=InnoDB ' . $charset_collate;
 		dbDelta( $sql );
 
-		// self::insertRandomData();
+		self::insert_default_email_templates();
 	}
 
 	public static function dropTables() {
@@ -65,46 +65,41 @@ class DNM_Database {
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . DNM_SETTINGS );
 	}
 
-
-	// public static function insertRandomData() {
-	// global $wpdb;
-	// for ( $i = 0; $i < 10000; $i++ ) {
-	// Generate random data for customer
-	// $wpdb->insert(
-	// DNM_CUSTOMERS,
-	// array(
-	// 'name'    => 'Name' . $i,
-	// 'email'   => 'email' . $i . '@example.com',
-	// 'phone'   => '123-456-' . wp_rand( 1000, 9999 ),
-	// 'address' => 'Address ' . $i,
-	// )
-	// );
-
-	// $customer_id = $wpdb->insert_id;
-	// Generate random data for order
-	// $wpdb->insert(
-	// DNM_ORDERS,
-	// array(
-	// 'ID'          => $i,
-	// 'order_id'    => $i,
-	// 'type'        => 'type' . wp_rand( 1, 5 ),
-	// 'customer_id' => $customer_id,
-	// 'amount'      => wp_rand( 1, 1000 ),
-	// 'label'       => 'label' . wp_rand( 1, 5 ),
-	// 'created_at'  => current_time( 'mysql' ),
-	// 'updated_at'  => current_time( 'mysql' ),
-	// )
-	// );
-	// }
-	// }
-
-
 	public static function deactivation() {
 		self::dropTables();
 	}
 
 	public static function uninstall() {
 		self::dropTables();
+	}
+
+	public static function insert_default_email_templates() {
+		global $wpdb;
+
+		// Define the default email templates
+		$default_templates = array(
+			'payment_canfirm_subject' => 'Your payment has been confirmed',
+			'payment_confirm_body' => 'Thank you for your payment. Your payment has been confirmed.',
+			// Add more default templates as needed
+		);
+
+		// Prepare the data for the database
+		$email_data = array(
+			'option_name'  => 'email_templates',
+			'option_value' => maybe_serialize($default_templates),
+			'autoload'     => 'yes',
+		);
+
+		// Check if the email templates already exist
+		$existing = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'email_templates'));
+
+		if (!$existing) {
+			// If the templates don't exist, insert a new row
+			$result = $wpdb->insert(DNM_SETTINGS, $email_data);
+			if (false === $result) {
+				throw new Exception('Failed to insert email templates.');
+			}
+		}
 	}
 
 	public static function insertIntoTable( $table, $data ) {

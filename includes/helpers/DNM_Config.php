@@ -163,15 +163,15 @@ class DNM_Config {
 			return;
 		}
 
-		$payment_canfirm_subject = sanitize_text_field( $_POST['payment_canfirm_subject'] ) ? sanitize_text_field( $_POST['payment_canfirm_subject'] ) : 'Payment Confirmation';
-		$payment_canfirm_body    = sanitize_text_field( $_POST['payment_canfirm_body'] ) ? sanitize_text_field( $_POST['payment_canfirm_body'] ) : 'Thank you for your payment. Your payment has been confirmed.';
+		$payment_confirm_subject = sanitize_text_field( $_POST['payment_confirm_subject'] ) ? sanitize_text_field( $_POST['payment_confirm_subject'] ) : 'Payment Confirmation';
+		$payment_confirm_body    = sanitize_text_field( $_POST['payment_confirm_body'] ) ? sanitize_text_field( $_POST['payment_confirm_body'] ) : 'Thank you for your payment. Your payment has been confirmed.';
 
 		$email_data = array(
 			'option_name'  => 'email_templates',
 			'option_value' => maybe_serialize(
 				array(
-					'payment_canfirm_subject' => $payment_canfirm_subject,
-					'payment_canfirm_body'    => $payment_canfirm_body,
+					'payment_confirm_subject' => $payment_confirm_subject,
+					'payment_confirm_body'    => $payment_confirm_body,
 				)
 			),
 			'autoload'     => 'yes',

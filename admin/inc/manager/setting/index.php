@@ -213,7 +213,6 @@ $email_enable = DNM_Config::get_email_settings();
 
 							<?php 
 							$email_tempates = DNM_Config::get_email_templates();
-
 							?>
 
 								<!-- Email settings form -->
@@ -236,12 +235,12 @@ $email_enable = DNM_Config::get_email_settings();
 															<div class="accordion-body">
 																<form>
 																	<div class="mb-3">
-																		<label for="payment_canfirm_subject" class="form-label">Email Subject</label>
-																		<input type="text" class="form-control" id="payment_canfirm_subject" name="payment_canfirm_subject" value="<?php echo $email_tempates['payment_canfirm_subject'] ?>">
+																		<label for="payment_confirm_subject" class="form-label">Email Subject</label>
+																		<input type="text" class="form-control" id="payment_confirm_subject" name="payment_confirm_subject" value="<?php echo $email_tempates['payment_confirm_subject'] ?>">
 																	</div>
 																	<div class="mb-3">
-																		<label for="payment_canfirm_body" class="form-label">Email Body</label>
-																		<textarea class="form-control" id="payment_canfirm_body" rows="3" name="payment_canfirm_body"><?php echo $email_tempates['payment_canfirm_body'] ?></textarea>
+																		<label for="payment_confirm_body" class="form-label">Email Body</label>
+																		<textarea class="form-control" id="payment_confirm_body" rows="3" name="payment_confirm_body"><?php echo $email_tempates['payment_confirm_body'] ?></textarea>
 																	</div>
 																</form>
 															</div>
