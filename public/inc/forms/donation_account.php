@@ -8,6 +8,7 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 if (is_user_logged_in()) {
 	$current_user = wp_get_current_user();
 	$user_id = $current_user->ID;
+	
 
 	$customer_data = DNM_Database::getRecords(DNM_CUSTOMERS, 'user_id', $user_id);
 	
