@@ -31,6 +31,7 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                             <th>Payment method</th>
                             <th>Transaction ID</th>
                             <th>Reference ID</th>
+                            <th>Referenced By</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -47,6 +48,7 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                             <th>Payment method</th>
                             <th>Transaction ID</th>
                             <th>Reference ID</th>
+                            <th>Referenced By</th>
                             <th>Actions</th>
                         </tr>
                     </tfoot>

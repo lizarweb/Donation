@@ -28,16 +28,16 @@
                 success: function (response) {
                     console.log(response);
                     // Remove all alerts before starting
-                    // $('.alert').remove();
-                    // if (response.success === false) {
-                    //     // Assuming the error message is in response.data
-                    //     // and the keys in response.data correspond to the ids of the input fields
-                    //     for (let field in response.data) {
-                    //         $(`#${field}`).before(`<div style="color: red;" class="alert alert-danger">${response.data[field]}</div>`);
-                    //     }
-                    // } else {
-                    //     window.location.href = response;
-                    // }
+                    $('.alert').remove();
+                    if (response.success === false) {
+                        // Assuming the error message is in response.data
+                        // and the keys in response.data correspond to the ids of the input fields
+                        for (let field in response.data) {
+                            $(`#${field}`).before(`<div style="color: red;" class="alert alert-danger">${response.data[field]}</div>`);
+                        }
+                    } else {
+                        window.location.href = response;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.error(`Request failed: ${textStatus}`);

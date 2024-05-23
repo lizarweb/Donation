@@ -60,7 +60,7 @@ class DNM_Registration {
 			'transactionID' => $transactionID,
 		);
 		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 5 * MINUTE_IN_SECONDS );
+		set_transient( 'user_data', $user_data, 1 * MINUTE_IN_SECONDS );
 
 		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
 		// You can also define the redirect and callback URL on per transaction basis
@@ -95,21 +95,10 @@ class DNM_Registration {
 			$errors['amount'] = 'Amount should be 11000';
 		}
 
-		// check if reference_id is used 10 times. If yes, then return error.
-		$reference_id_count = DNM_Database::getRecordCount( DNM_CUSTOMERS, 'reference_id', $reference_id );
-
-		if ( $reference_id_count >= 10 ) {
-			$errors['reference_id'] = 'Reference ID is already used 10 times';
-		}
-
+		// validate reference_id only if it's not empty
 		if ( ! empty( $reference_id ) ) {
-			// check if reference_id is correct format and exists in database.
-			if ( ! preg_match( '/^MP[0-9]{1}$/', $reference_id ) ) {
-				$errors['reference_id'] = 'Reference ID should be in format MP123456';
-			}
+			$errors = DNM_Helper::validate_reference_id( $reference_id, 10 );
 		}
-
-		$reference_id_exists = DNM_Database::getRecord( DNM_CUSTOMERS, 'reference_id', $reference_id );
 
 		if ( ! empty( $errors ) ) {
 			wp_send_json_error( $errors );
@@ -149,7 +138,7 @@ class DNM_Registration {
 			'transactionID' => $transactionID,
 		);
 		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 5 * MINUTE_IN_SECONDS );
+		set_transient( 'user_data', $user_data, 1 * MINUTE_IN_SECONDS );
 
 		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
 		echo $redirectURL;
@@ -199,40 +188,42 @@ class DNM_Registration {
 			'state'        => $state,
 			'address'      => $address,
 			'amount'       => $amount,
-			'payment_type' => '11000',
+			'payment_type' => 'membership',
 			'reference_id' => $reference_id,
 		);
 
 		// // Below are the Test Details for Standard Checkout UAT, you can get your own from PhonePe Team. Make sure to keep the Salt Key and Salt Index safe (in environment variables or .env file).
 		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
-		$merchantId         = $phone_pay_settings['phone_pay_merchant_id'];
-		$merchantUserId     = $phone_pay_settings['phone_pay_merchant_user_id'];
-		$saltKey            = $phone_pay_settings['phone_pay_salt_key'];
-		$saltIndex          = $phone_pay_settings['phone_pay_salt_index'];
-		$callbackUrl        = $phone_pay_settings['phone_pay_redirect_url'];
+		// $merchantId         = $phone_pay_settings['phone_pay_merchant_id'];
+		// $merchantUserId     = $phone_pay_settings['phone_pay_merchant_user_id'];
+		// $saltKey            = $phone_pay_settings['phone_pay_salt_key'];
+		// $saltIndex          = $phone_pay_settings['phone_pay_salt_index'];
+		// $callbackUrl        = $phone_pay_settings['phone_pay_redirect_url'];
 
-		// create subscriptionId.
-		$subscriptionId = 'SUBS' . date( 'ymdHis' );
+		
+		$amountInPaisa = $amount * 100; // Amount in Paisa
+		$userMobile    = $phone; // User Mobile Number
+		$transactionID = 'TRANS' . date( 'ymdHis' ); // Transaction ID to track and identify the transaction, make sure to save this in your database.
 
-		// create user subscription on PhonePe
-		$res = DNM_Helper::create_subscription( $subscriptionId, $phone, $amount, 'MONTHLY', 12 );
+		$user_data = array(
+			'user'          => $donation_data,
+			'transactionID' => $transactionID,
+		);
+		// Save the transaction ID in transient for 5 min.
+		set_transient( 'user_data', $user_data, 1 * MINUTE_IN_SECONDS );
 
-		$state = $res['state'];
+		$phonepe            = PhonePe::init(
+			$phone_pay_settings['phone_pay_merchant_id'], // Merchant ID
+			$phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
+			$phone_pay_settings['phone_pay_salt_key'], // Salt Key
+			$phone_pay_settings['phone_pay_salt_index'], // Salt Index
+			$phone_pay_settings['phone_pay_redirect_url'], // Redirect URL, can be defined on per transaction basis
+			$phone_pay_settings['phone_pay_redirect_url'], // Callback URL, can be defined on per transaction basis
+			$phone_pay_settings['phone_pay_mode'] // or "PROD"
+		);
 
-		$transactionID = 'TRANS' . date( 'ymdHis' );
-
-		if ( $state == 'CREATED' ) {
-			$response = DNM_Helper::setup_mandate_or_accept_payment( $merchantId, $merchantUserId, $subscriptionId, $transactionID, $saltKey, $saltIndex, $callbackUrl, 'ANDROID', 'UPI_COLLECT', 'com.phonepe.app' );
-		}
-
-		var_dump( $response );
-		die;
-
-		// Check the response
-		// if ( $responseData['success'] === true ) {
-		// echo 'Subscription status fetched successfully. Subscription ID: ' . $responseData['data']['subscriptionId'] . '. Status: ' . $responseData['data']['state'];
-		// } else {
-		// echo 'Failed to fetch subscription status. Error: ' . $responseData['message'];
-		// }
+		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
+		echo $redirectURL;
+		exit;
 	}
 }

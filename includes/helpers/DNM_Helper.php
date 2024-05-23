@@ -271,9 +271,9 @@ class DNM_Helper {
 		HTML;
 	}
 
-	public static function getNextOrderId() {
+	public static function getNextOrderId( $payment_type ) {
 		global $wpdb;
-		$last_order_id = $wpdb->get_var( 'SELECT order_id FROM ' . DNM_ORDERS . ' ORDER BY ID DESC LIMIT 1' );
+		$last_order_id = $wpdb->get_var( 'SELECT order_id FROM ' . DNM_ORDERS . ' WHERE type = "' . $payment_type . '" ORDER BY ID DESC LIMIT 1' );
 		return $last_order_id + 1;
 	}
 

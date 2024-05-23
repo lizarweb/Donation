@@ -102,20 +102,12 @@ class DNM_Config {
 		}
 
 		$email_enable = isset( $_POST['email_enable'] ) ? 1 : 0;
-		// $email_from   = sanitize_text_field( $_POST['email_from'] );
-		// $email_to     = sanitize_text_field( $_POST['email_to'] );
-		// $email_cc     = sanitize_text_field( $_POST['email_cc'] );
-		// $email_bcc    = sanitize_text_field( $_POST['email_bcc'] );
 
 		$email_data = array(
 			'option_name'  => 'email_settings',
 			'option_value' => maybe_serialize(
 				array(
 					'email_enable' => $email_enable,
-					// 'email_from'   => $email_from,
-					// 'email_to'     => $email_to,
-					// 'email_cc'     => $email_cc,
-					// 'email_bcc'    => $email_bcc,
 				)
 			),
 			'autoload'     => 'yes',

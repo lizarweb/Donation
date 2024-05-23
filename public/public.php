@@ -13,6 +13,7 @@ add_shortcode( 'donation_registration_form', array( 'DNM_Shortcode', 'custom_reg
 add_shortcode( 'fixed_registration_form', array( 'DNM_Shortcode', 'fixed_registration' ) );
 add_shortcode( 'member_registration_form', array( 'DNM_Shortcode', 'member_registration' ) );
 add_shortcode( 'payment_status', array( 'DNM_Shortcode', 'payment_status' ) );
+add_shortcode( 'donation_account', array( 'DNM_Shortcode', 'donation_account' ) );
 
 // Save custom registration form.
 add_action( 'wp_ajax_dnm_save_custom_registration_form', array( 'DNM_Registration', 'save_custom_registration_form' ) );

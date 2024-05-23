@@ -15,7 +15,8 @@ class DNM_Database {
 		// Create Customer table.
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . DNM_CUSTOMERS . ' (
 		ID bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-		reference_id bigint(20) UNSIGNED DEFAULT NULL,
+		reference_id varchar(255) DEFAULT NULL,
+		user_id bigint(20) DEFAULT NULL,
 		name varchar(191) DEFAULT NULL,
 		email varchar(191) DEFAULT NULL,
 		phone varchar(191) DEFAULT NULL,
@@ -56,6 +57,10 @@ class DNM_Database {
 		dbDelta( $sql );
 
 		self::insert_default_email_templates();
+		self::insert_default_email_settings();
+		self::insert_default_peyment_settings();
+		
+		self::add_dnm_member_role();
 	}
 
 	public static function dropTables() {
@@ -66,11 +71,22 @@ class DNM_Database {
 	}
 
 	public static function deactivation() {
-		self::dropTables();
+		// self::dropTables();
 	}
 
 	public static function uninstall() {
 		self::dropTables();
+	}
+
+	public static function add_dnm_member_role() {
+		add_role(
+			'dnm_member', // System name for the role.
+			__('DNM Member'), // Display name for the role.
+			array(
+				'read' => true, // True allows this capability.
+				// Additional capabilities...
+			)
+		);
 	}
 
 	public static function insert_default_email_templates() {
@@ -78,26 +94,82 @@ class DNM_Database {
 
 		// Define the default email templates
 		$default_templates = array(
-			'payment_canfirm_subject' => 'Your payment has been confirmed',
-			'payment_confirm_body' => 'Thank you for your payment. Your payment has been confirmed.',
+			'payment_confirm_subject' => 'Your payment has been confirmed',
+			'payment_confirm_body'    => 'Thank you for your payment. Your payment has been confirmed.',
 			// Add more default templates as needed
 		);
 
 		// Prepare the data for the database
 		$email_data = array(
 			'option_name'  => 'email_templates',
-			'option_value' => maybe_serialize($default_templates),
+			'option_value' => maybe_serialize( $default_templates ),
 			'autoload'     => 'yes',
 		);
 
 		// Check if the email templates already exist
-		$existing = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'email_templates'));
+		$existing = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'email_templates' ) );
 
-		if (!$existing) {
+		if ( ! $existing ) {
 			// If the templates don't exist, insert a new row
-			$result = $wpdb->insert(DNM_SETTINGS, $email_data);
-			if (false === $result) {
-				throw new Exception('Failed to insert email templates.');
+			$result = $wpdb->insert( DNM_SETTINGS, $email_data );
+			if ( false === $result ) {
+				throw new Exception( 'Failed to insert email templates.' );
+			}
+		}
+	}
+
+	public static function insert_default_email_settings() {
+
+		global $wpdb;
+		$email_settings = array( 'email_enable' => 0 );
+
+		// Prepare the data for the database
+		$email_data = array(
+			'option_name'  => 'email_settings',
+			'option_value' => maybe_serialize( $email_settings ),
+			'autoload'     => 'yes',
+		);
+
+		// Check if the email templates already exist
+		$existing = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'email_settings' ) );
+
+		if ( ! $existing ) {
+			// If the settings don't exist, insert a new row
+			$result = $wpdb->insert( DNM_SETTINGS, $email_data );
+			if ( false === $result ) {
+				throw new Exception( 'Failed to insert email settings.' );
+			}
+		}
+	}
+
+	public static function insert_default_peyment_settings() {
+
+		global $wpdb;
+		$payment_settings = array(
+			'phone_pay_enable'           => 0,
+			'phone_pay_mode'             => '',
+			'phone_pay_redirect_url'     => '',
+			'phone_pay_merchant_id'      => '',
+			'phone_pay_merchant_user_id' => '',
+			'phone_pay_salt_key'         => '',
+			'phone_pay_salt_index'       => '',
+		);
+
+		// Prepare the data for the database
+		$email_data = array(
+			'option_name'  => 'phone_pay_settings',
+			'option_value' => maybe_serialize( $payment_settings ),
+			'autoload'     => 'yes',
+		);
+
+		// Check if the email templates already exist
+		$existing = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . DNM_SETTINGS . ' WHERE option_name = %s', 'phone_pay_settings' ) );
+
+		if ( ! $existing ) {
+			// If the settings don't exist, insert a new row
+			$result = $wpdb->insert( DNM_SETTINGS, $email_data );
+			if ( false === $result ) {
+				throw new Exception( 'Failed to insert phone settings.' );
 			}
 		}
 	}
@@ -123,15 +195,21 @@ class DNM_Database {
 		return $result;
 	}
 
-	public static function getRecord($table, $column, $value) {
+	public static function getRecord( $table, $column, $value ) {
 		global $wpdb;
 		$record = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE ' . $column . ' = %s', $value ) );
 		return $record;
 	}
 
-	public static function getRecordCount($table, $column, $value) {
+	public static function getRecordCount( $table, $column, $value ) {
 		global $wpdb;
 		$record = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . $table . ' WHERE ' . $column . ' = %s', $value ) );
 		return $record;
+	}
+
+	public static function getRecords( $table, $column, $value ) {
+		global $wpdb;
+		$records = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE ' . $column . ' = %s', $value ) );
+		return $records;
 	}
 }

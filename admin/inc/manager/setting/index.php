@@ -310,6 +310,12 @@ $email_enable = DNM_Config::get_email_settings();
 												<div class="col-sm-4 mb-3">
 													<button class="btn btn-dark w-100" type="button" id="payment_status">[payment_status]</button>
 												</div>
+												<div class="col-sm-8 mb-3">
+													<label for="donation_account" class="form-label"> <?php echo __('Customer Account (Click To Copy)', 'donation'); ?></label>
+												</div>
+												<div class="col-sm-4 mb-3">
+													<button class="btn btn-dark w-100" type="button" id="donation_account">[donation_account]</button>
+												</div>
 											</div>
 										</div>
 									</div>

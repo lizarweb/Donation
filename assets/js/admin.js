@@ -186,6 +186,11 @@
             var shortCode = $(this).text();
             copyToClipboard(shortCode);
         });
+        
+        $("#donation_account").on("click", function () {
+            var shortCode = $(this).text();
+            copyToClipboard(shortCode);
+        });
 
     });
 })(jQuery);

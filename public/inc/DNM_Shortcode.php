@@ -40,12 +40,20 @@ class DNM_Shortcode {
 		return ob_get_clean();
 	}
 
+	public static function donation_account() {
+		self::enqueue_dnm_assets();
+		ob_start();
+		require_once DNM_PLUGIN_DIR_PATH . 'public/inc/forms/donation_account.php';
+		return ob_get_clean();
+	}
+
 	public static function enqueue_dnm_assets() {
-		// wp_enqueue_style( 'dnm-bootstrap', DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css', array(), DNM_VERSION );s
+		wp_enqueue_style( 'dnm-bootstrap', DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css', array(), DNM_VERSION );
 		// wp_enqueue_style( 'dnm-bootstrap-icons', DNM_PLUGIN_URL . '/assets/css/bootstrap-icons.min.css', array(), DNM_VERSION );
 		wp_enqueue_style( 'dnm-public-css', DNM_PLUGIN_URL . '/assets/css/public.css', array(), DNM_VERSION );
 
 		wp_enqueue_script( 'dnm-public-js', DNM_PLUGIN_URL . '/assets/js/public.js', array( 'jquery' ), DNM_VERSION, true );
+		wp_enqueue_script( 'dnm-bootstrap', DNM_PLUGIN_URL . '/assets/js/bootstrap.min.js', array( 'jquery' ), DNM_VERSION, true );
 		wp_localize_script(
 			'dnm-public-js',
 			'dnmData',

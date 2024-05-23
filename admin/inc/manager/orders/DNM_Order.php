@@ -18,7 +18,7 @@ class DNM_Order {
 		$offset = $start;
 		$limit  = $limit;
 
-		$query = 'SELECT o.ID, o.order_id, o.transaction_id, c.reference_id, o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
+		$query = 'SELECT o.ID, o.order_id, o.transaction_id, c.ID as reference , c.reference_id as referenced_by , o.type, o.payment_method, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
             INNER JOIN ' . DNM_CUSTOMERS . ' as c
             ON o.customer_id = c.ID WHERE o.type = "11000"';
 
@@ -44,8 +44,9 @@ class DNM_Order {
 					DNM_Config::date_format_text( $order->created_at ),
 					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
 					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
-					$order->transaction_id ?  $order->transaction_id  : '-',
-					$order->reference_id ?  $order->reference_id  : '-',
+					$order->transaction_id ? $order->transaction_id : '-',
+					'MP' . $order->reference ? 'MP' . $order->reference : '-',
+					$order->referenced_by ? $order->referenced_by : '-',
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=reference&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people-fill"></i></a>
@@ -103,7 +104,7 @@ class DNM_Order {
 					DNM_Config::date_format_text( $order->created_at ),
 					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
 					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
-					$order->transaction_id ?  $order->transaction_id  : '-',
+					$order->transaction_id ? $order->transaction_id : '-',
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye-fill"></i></a>
@@ -134,7 +135,7 @@ class DNM_Order {
 		$offset = $start;
 		$limit  = $limit;
 
-		$query = 'SELECT o.ID, o.order_id, o.transaction_id, o.type, o.payment_method, c.reference_id, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
+		$query = 'SELECT o.ID, o.order_id, o.transaction_id, o.type, o.payment_method, c.ID as reference , c.reference_id as referenced_by, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
             INNER JOIN ' . DNM_CUSTOMERS . ' as c
             ON o.customer_id = c.ID WHERE o.type = "membership"';
 
@@ -160,11 +161,13 @@ class DNM_Order {
 					DNM_Config::date_format_text( $order->created_at ),
 					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
 					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
-					$order->transaction_id ?  $order->transaction_id  : '-',
-					$order->reference_id ?  $order->reference_id  : '-',
+					$order->transaction_id ? $order->transaction_id : '-',
+					'MP' . $order->reference ? 'MP' . $order->reference : '-',
+					$order->reference_id ? $order->reference_id : '-',
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
-						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye-fill"></i></a>
+						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=reference&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people-fill"></i></a>
+						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-receipt"></i></a>
 						<button class="btn btn-sm btn-outline-danger delete-order" data-id="' . $order->ID . '" data-nonce="' . wp_create_nonce( 'dnm_delete_order' ) . '"><i class="bi bi-trash-fill"></i></button>
 					</div>',
 				);
@@ -239,7 +242,7 @@ class DNM_Order {
 				$customer_id = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM ' . DNM_CUSTOMERS . ' WHERE email = %s', $data['email'] ) );
 
 				// if ( $customer_id && $data['order_id'] == 0 ) {
-				// 	$errors['email'] = 'Email already exists. Please use another email.';
+				// $errors['email'] = 'Email already exists. Please use another email.';
 				// } else {
 					$customerData = array(
 						'name'       => $data['name'],
@@ -267,43 +270,43 @@ class DNM_Order {
 							throw new Exception( 'Failed to save customer.' );
 						}
 					}
-				// }
+					// }
 
-				if ( ! empty( $errors ) ) {
-					wp_send_json_error( $errors );
-				}
-
-				$order_data = array(
-					'order_id'       => $data['order_id'],
-					'type'           => $data['type'],
-					'payment_method' => $data['payment_method'],
-					'customer_id'    => $customer_id,
-					'amount'         => $data['amount'],
-					'label'          => $data['payment_method'],
-					'created_at'     => current_time( 'mysql' ),
-				);
-
-				if ( $data['order_id'] != 0 ) {
-					// Update the order data
-					unset( $order_data['type'] );
-					$order_data['updated_at'] = current_time( 'mysql' );
-					$update_result            = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'order_id' => $data['order_id'] ) );
-					$message                  = 'Order has been updated successfully.';
-					if ( false === $update_result ) {
-						throw new Exception( 'Failed to update order.' );
+					if ( ! empty( $errors ) ) {
+						wp_send_json_error( $errors );
 					}
-				} else {
-					// Insert new order data
-					$last_order_id          = DNM_Helper::getNextOrderId();
-					$order_data['order_id'] = $last_order_id;
-					$order_id               = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
-					$message                = 'Order has been saved successfully.';
-					if ( ! $order_id ) {
-						throw new Exception( 'Failed to save order.' );
-					}
-				}
 
-				$wpdb->query( 'COMMIT' );
+					$order_data = array(
+						'order_id'       => $data['order_id'],
+						'type'           => $data['type'],
+						'payment_method' => $data['payment_method'],
+						'customer_id'    => $customer_id,
+						'amount'         => $data['amount'],
+						'label'          => $data['payment_method'],
+						'created_at'     => current_time( 'mysql' ),
+					);
+
+					if ( $data['order_id'] != 0 ) {
+						// Update the order data
+						unset( $order_data['type'] );
+						$order_data['updated_at'] = current_time( 'mysql' );
+						$update_result            = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'order_id' => $data['order_id'] ) );
+						$message                  = 'Order has been updated successfully.';
+						if ( false === $update_result ) {
+							throw new Exception( 'Failed to update order.' );
+						}
+					} else {
+						// Insert new order data
+						$last_order_id          = DNM_Helper::getNextOrderId();
+						$order_data['order_id'] = $last_order_id;
+						$order_id               = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
+						$message                = 'Order has been saved successfully.';
+						if ( ! $order_id ) {
+							throw new Exception( 'Failed to save order.' );
+						}
+					}
+
+					$wpdb->query( 'COMMIT' );
 			} catch ( Exception $e ) {
 
 				$wpdb->query( 'ROLLBACK' );
@@ -382,11 +385,8 @@ class DNM_Order {
 
 	public static function get_customers_by_reference_id( $reference_id ) {
 		global $wpdb;
-		$query = 'SELECT * FROM ' . DNM_CUSTOMERS . ' WHERE reference_id = %s';
+		$query     = 'SELECT * FROM ' . DNM_CUSTOMERS . ' WHERE reference_id = %s';
 		$customers = $wpdb->get_results( $wpdb->prepare( $query, $reference_id ) );
 		return $customers;
-		
 	}
-
-	
 }

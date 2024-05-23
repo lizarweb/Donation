@@ -8,8 +8,19 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/vendor/autoload.php';
 
 use PhonePe\PhonePe;
 
+$user_data = get_transient( 'user_data' ); // Transaction ID to track and identify the transaction, make sure to save this in your database.
+
+// check if user_data is empty
+if ( empty( $user_data ) ) {
+	?>
+	<div class="alert alert-danger" role="alert">
+		<p>There was an error processing your transaction. Please try again later.</p>
+	</div>
+	<?php
+	return;
+}
+
 try {
-	$user_data = get_transient( 'user_data' ); // Transaction ID to track and identify the transaction, make sure to save this in your database.
 
 	$user         = $user_data['user'];
 	$payment_type = isset( $user['payment_type'] ) ? $user['payment_type'] : 'membership';
@@ -54,6 +65,24 @@ try {
 					'created_at'   => current_time( 'mysql' ),
 				);
 
+				if ($payment_type  === 'membership') {
+					// register wordpress user in user table with role 'dnm_member'
+					$user_id = wp_insert_user(
+						array(
+							'user_login' => $user['email'],
+							'user_pass'  => wp_generate_password(),
+							'user_email' => $user['email'],
+							'role'       => 'dnm_member',
+						)
+					);
+
+					$customerData['user_id'] = $user_id;
+
+					if ( is_wp_error( $user_id ) ) {
+						throw new Exception( 'Failed to register user' );
+					}
+				}
+
 				$customer_id = DNM_Database::insertIntoTable( DNM_CUSTOMERS, $customerData );
 
 				if ( ! $customer_id ) {
@@ -61,7 +90,7 @@ try {
 				}
 
 				$order_data = array(
-					'order_id'       => DNM_Helper::getNextOrderId(),
+					'order_id'       => DNM_Helper::getNextOrderId( $payment_type ),
 					'transaction_id' => $user_data['transactionID'], // Corrected 'tnasaction_id' to 'transaction_id'
 					'type'           => $payment_type,
 					'payment_method' => 'Phonepe',
@@ -69,14 +98,17 @@ try {
 					'amount'         => $user['amount'],
 					'created_at'     => current_time( 'mysql' ),
 				);
+
+				
 				$order_id   = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
+
+				
 
 				if ( ! $order_id ) {
 					throw new Exception( 'Failed to insert order data' );
 				}
 
 				$wpdb->query( 'COMMIT' );
-
 			} catch ( Exception $e ) {
 				$wpdb->query( 'ROLLBACK' ); // If any exception is thrown, rollback the transaction
 				error_log( $e->getMessage() ); // Log the error message for debugging
@@ -99,9 +131,8 @@ try {
 	// error_log($e->getMessage());
 	// Handle exception here, e.g., show a user-friendly error message
 	?>
-		<div class="alert alert-danger" role="alert">
-			<p>There was an error processing your transaction. Please try again later.</p>
-		</div>
+	<div class="alert alert-danger" role="alert">
+		<p>There was an error processing your transaction. Please try again later.</p>
+	</div>
 	<?php
 }
-
