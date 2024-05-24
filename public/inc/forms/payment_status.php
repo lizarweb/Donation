@@ -67,16 +67,27 @@ try {
 
 				if ( $payment_type === 'membership' ) {
 					// register WordPress user in user table with role 'dnm_member'
+
+					$newpass = wp_generate_password();
 					$user_id = wp_insert_user(
 						array(
 							'user_login' => $user['email'],
-							'user_pass'  => wp_generate_password(),
+							'user_pass'  => $newpass,
 							'user_email' => $user['email'],
 							'role'       => 'dnm_member',
 						)
 					);
 
 					$customerData['user_id'] = $user_id;
+					
+					// send email to customer with username and password
+					$subject = 'Your account has been created';
+					$body    = 'Your account has been created. Here are your login details:<br>';
+					$body   .= 'Username: ' . $user['email'] . '<br>';
+					$body   .= 'Password: ' . $newpass . '<br>';
+
+
+					wp_mail( $user['email'], $subject, $body );
 
 					if ( is_wp_error( $user_id ) ) {
 						throw new Exception( 'Failed to register user' );

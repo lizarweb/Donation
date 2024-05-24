@@ -30,7 +30,10 @@ $logo = DNM_Helper::get_logo();
 // get customer details reference_id from the order
 
 $reference_code = 'MP' . $order->reference_code;
-$customers = DNM_Order::get_customers_by_reference_id($reference_code);
+// $customers = DNM_Order::get_customers_by_reference_id($reference_code);
+
+$customers = DNM_Database::getReferencedCustomers($reference_code);
+
 ?>
 <div class="container mt-3">
 	<div class="row justify-content-center">
@@ -47,12 +50,15 @@ $customers = DNM_Order::get_customers_by_reference_id($reference_code);
 									<th>#</th>
 									<th>Name</th>
 									<th>Email</th>
+									<th>Amount</th>
 									<th>Phone</th>
 									<th>Address</th>
 								</tr>
 							</thead>
 							<tbody>
 								<?php
+								$total_commission = 0;
+								$commission_percentage = DNM_Helper::get_referenced_discount();
 								$count = 1;
 								if (!empty($customers)) {
 									foreach ($customers as $customer) {
@@ -60,10 +66,15 @@ $customers = DNM_Order::get_customers_by_reference_id($reference_code);
 										echo '<td>' . esc_html($count) . '</td>';
 										echo '<td>' . esc_html($customer->name) . '</td>';
 										echo '<td>' . esc_html($customer->email) . '</td>';
+										echo '<td>' . esc_html(DNM_Config::get_amount_text($customer->orders[0]->amount)) . '</td>';
 										echo '<td>' . esc_html($customer->phone) . '</td>';
 										echo '<td>' . esc_html($customer->address) . '</td>';
 										echo '</tr>';
 										$count++;
+
+										// calculate $total_commission.
+										$commission = $customer->orders[0]->amount * ($commission_percentage / 100);
+										$total_commission += $commission;
 									}
 								} else {
 									echo '<tr><td colspan="5" class="text-center">This user does not have referenced users.</td></tr>';
@@ -71,6 +82,8 @@ $customers = DNM_Order::get_customers_by_reference_id($reference_code);
 								?>
 							</tbody>
 						</table>
+
+						<strong><p>Total commission earned: <?php echo esc_html(DNM_Config::get_amount_text($total_commission)); ?></p></strong>
 					</div>
 				</div>
 			</div>

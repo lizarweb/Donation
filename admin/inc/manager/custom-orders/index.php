@@ -18,7 +18,7 @@ $page_url = DNM_Helper::get_page_url('donation-orders');
                 </div>
             </nav>
             <div class="table-responsive small">
-                <table id="custom_orders_table" class="table table-sm table-striped display" style="width:100%">
+                <table id="custom_orders_table" class="table table-sm table-striped display nowrap" style="width:100%">
                     <thead>
                         <tr>
                             <th>#ID</th>

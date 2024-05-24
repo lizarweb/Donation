@@ -127,7 +127,7 @@ if ( is_user_logged_in() ) {
 											<?php
 											$total_commision  = 0;
 											$referenced_users = DNM_Database::getReferencedCustomers( $customer_reference_id );
-
+											$commission_percentage = DNM_Helper::get_referenced_discount();
 											if ( ! empty( $referenced_users ) ) {
 												foreach ( $referenced_users as $user ) {
 													echo '<tr>';
@@ -138,7 +138,7 @@ if ( is_user_logged_in() ) {
 													echo '<td>' . esc_html( $user->reference_id ) . '</td>';
 													echo '</tr>';
 
-													$commission_percentage = DNM_Helper::get_referenced_discount();
+													
 
 													$commission       = $user->orders[0]->amount * ( $commission_percentage / 100 );
 													$total_commision += $commission;
