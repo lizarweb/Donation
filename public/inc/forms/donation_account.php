@@ -15,16 +15,16 @@ if (is_user_logged_in()) {
 	// Check if customer data exists
 	if ($customer_data) {
 		// Extract customer details from the first record
-		$customerId    = $customer_data[0]->ID;
-		$customerName  = $customer_data[0]->name;
-		$customerPhone = $customer_data[0]->phone;
-		$customerEmail = $customer_data[0]->email;
-		$customerCity  = $customer_data[0]->city;
-		$customerState = $customer_data[0]->state;
-		$customerAddress = $customer_data[0]->address;
+		$customer_id    = $customer_data[0]->ID;
+		$customer_name  = $customer_data[0]->name;
+		$customer_phone = $customer_data[0]->phone;
+		$customer_email = $customer_data[0]->email;
+		$customer_city  = $customer_data[0]->city;
+		$customer_state = $customer_data[0]->state;
+		$customer_address = $customer_data[0]->address;
 
 		// Generate a reference ID for the customer
-		$referenceId = 'MP' . $customerId;
+		$customer_reference_id = 'MP' . $customer_id;
 	} else {
 		// Handle the case where the account does not exist in the donation system
 		echo '<div class="alert alert-danger text-center" role="alert">';
@@ -35,7 +35,7 @@ if (is_user_logged_in()) {
 	}
 
 	// get order data 
-	$order_data = DNM_Database::getRecords(DNM_ORDERS, 'customer_id', $id);
+	$order_data = DNM_Database::getRecords(DNM_ORDERS, 'customer_id', $customer_id);
 
 
 	?>
@@ -116,6 +116,7 @@ if (is_user_logged_in()) {
 												<th>Name</th>
 												<th>Email</th>
 												<th>Phone</th>
+												<th>Amount</th>
 												<!-- <th>City</th> -->
 												<!-- <th>State</th> -->
 												<!-- <th>Address</th> -->
@@ -124,22 +125,28 @@ if (is_user_logged_in()) {
 										</thead>
 										<tbody>
 											<?php
-											$referenced_users = DNM_Database::getRecords(DNM_CUSTOMERS, 'reference_id', $reference_id);
+											$total_commision = 0;
+											$referenced_users = DNM_Database::getReferencedCustomers($customer_reference_id);
+											
 											if (!empty($referenced_users)) {
 												foreach ($referenced_users as $user) {
 													echo '<tr>';
 													echo '<td>' . esc_html($user->name) . '</td>';
 													echo '<td>' . esc_html($user->email) . '</td>';
 													echo '<td>' . esc_html($user->phone) . '</td>';
-													// echo '<td>' . esc_html($user->city) . '</td>';
-													// echo '<td>' . esc_html($user->state) . '</td>';
-													// echo '<td>' . esc_html($user->address) . '</td>';
+													echo '<td>' . esc_html($user->orders[0]->amount) . '</td>';
 													echo '<td>' . esc_html($user->reference_id) . '</td>';
 													echo '</tr>';
+
+													$commission_percentage = DNM_Helper::get_referenced_discount();
+
+													$commission = $user->orders[0]->amount * ($commission_percentage / 100);
+													$total_commision += $commission;
 												}
 											} else {
 												echo '<tr><td colspan="7" class="text-center">No referenced users found.</td></tr>';
 											}
+											
 											?>
 										</tbody>
 									</table>
@@ -162,10 +169,10 @@ if (is_user_logged_in()) {
 				<div class="card">
 					<div class="card-body">
 						<div class="pb-2">
-							<h4 class="card-title mb-3">Wallet Balance : <?php echo 0.00;  ?></h4>
+							<h4 class="card-title mb-3">Reference Balance : <?php echo DNM_Config::get_amount_text($total_commision);  ?></h4>
 
 							<ul class="ps-3 mb-0">
-								<li>Discount percentage : </li>
+								<li>Reference Percentage : <?php echo $commission_percentage; ?>%</li>
 							</ul>
 
 						</div>
@@ -193,31 +200,31 @@ if (is_user_logged_in()) {
 									<tbody>
 										<tr>
 											<th scope="row">Name</th>
-											<td><?php echo $name; ?></td>
+											<td><?php echo $customer_name; ?></td>
 										</tr>
 										<tr>
 											<th scope="row">Phone</th>
-											<td><?php echo $phone; ?></td>
+											<td><?php echo $customer_phone; ?></td>
 										</tr>
 										<tr>
 											<th scope="row">Email</th>
-											<td><?php echo $email; ?></td>
+											<td><?php echo $customer_email; ?></td>
 										</tr>
 										<tr>
 											<th scope="row">City</th>
-											<td><?php echo $city; ?></td>
+											<td><?php echo $customer_city; ?></td>
 										</tr>
 										<tr>
 											<th scope="row">State</th>
-											<td><?php echo $state; ?></td>
+											<td><?php echo $customer_state; ?></td>
 										</tr>
 										<tr>
 											<th scope="row">Address</th>
-											<td><?php echo $address; ?></td>
+											<td><?php echo $customer_address; ?></td>
 										</tr>
 										<tr>
 											<th scope="row">Reference ID</th>
-											<td><?php echo $reference_id; ?></td>
+											<td><?php echo $customer_reference_id; ?></td>
 										</tr>
 									</tbody>
 								</table>

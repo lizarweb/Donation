@@ -212,4 +212,17 @@ class DNM_Database {
 		$records = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . $table . ' WHERE ' . $column . ' = %s', $value ) );
 		return $records;
 	}
+
+	public static function getReferencedCustomers($reference_id){ 
+
+		global $wpdb;
+		$customers = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . DNM_CUSTOMERS . ' WHERE reference_id = %s', $reference_id ) );
+		if ( $customers ) {
+			foreach ($customers as $customer) {
+				$customer->orders = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . DNM_ORDERS . ' WHERE customer_id = %d', $customer->ID ) );
+			}
+		}
+		return $customers; 
+	}
+
 }

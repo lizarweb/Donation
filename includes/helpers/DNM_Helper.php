@@ -12,6 +12,22 @@ class DNM_Helper {
 		return $prefix;
 	}
 
+	public static function get_referenced_discount() {
+		$discount = get_option( 'reference_discount' );
+		if ( ! $discount ) {
+			$discount = 5;
+		}
+		return $discount;
+	}
+
+	public static function get_referenced_code($reference_id) {
+		$code = get_option( 'dnm_referenced_code' );
+		if ( ! $code ) {
+			$code = 'MP'.$reference_id;
+		}
+		return $code;
+	}
+
 	public static function get_logo() {
 		$logo = get_option( 'dnm_logo' );
 		if ( ! $logo ) {
@@ -437,5 +453,100 @@ class DNM_Helper {
 
 		// Return the response
 		return $responseData;
+	}
+
+	public static function send_email(  $to, $subject, $body, $name = '', $email_for = '', $placeholders = array(), $attachments = null ) {
+
+		$email_carrier  = 'wp_mail';
+
+		if ( 'wp_mail' === $email_carrier ) {
+
+			$from_email = apply_filters( 'wp_mail_from', get_option( 'admin_email' ) );
+			$user = get_userdata(1); // 1 is the ID of the admin user
+			$from_name = $user->user_login;
+
+
+			if ( is_array( $to ) ) {
+				foreach ( $to as $key => $value ) {
+					$to[ $key ]	= $name[ $key ] . ' <' . $value . '>';
+				}
+			} else {
+				if ( ! empty( $name ) ) {
+					$to = "$name <$to>";
+				}
+			}
+
+			$headers = array();
+			array_push( $headers, 'Content-Type: text/html; charset=UTF-8' );
+			if ( ! empty( $from_name ) ) {
+				array_push( $headers, "From: $from_name <$from_email>" );
+			}
+
+			$status = wp_mail( $to, html_entity_decode( $subject ), $body, $headers, array(), $attachments );
+			return $status;
+
+		} elseif ( 'smtp' === $email_carrier ) {
+			// $smtp       = WLSM_M_Setting::get_settings_smtp(  );
+
+
+			global $wp_version;
+	
+			require_once(ABSPATH . WPINC . '/PHPMailer/PHPMailer.php');
+			require_once(ABSPATH . WPINC . '/PHPMailer/SMTP.php');
+			require_once(ABSPATH . WPINC . '/PHPMailer/Exception.php');
+			$mail = new PHPMailer\PHPMailer\PHPMailer( true );
+
+			try {
+				$mail->CharSet  = 'UTF-8';
+				$mail->Encoding = 'base64';
+
+				if ( $host && $port ) {
+					$mail->IsSMTP();
+					$mail->Host = $host;
+					if ( ! empty( $username ) && ! empty( $password ) ) {
+						$mail->SMTPAuth = true;
+						$mail->Password = $password;
+					} else {
+						$mail->SMTPAuth = false;
+					}
+					if ( ! empty( $encryption ) ) {
+						$mail->SMTPSecure = $encryption;
+					} else {
+						$mail->SMTPSecure = NULL;
+					}
+					$mail->Port = $port;
+				}
+
+				$mail->Username = $username;
+
+				$mail->setFrom( $mail->Username, $from_name );
+
+				$mail->Subject = html_entity_decode( $subject );
+				$mail->Body    = $body;
+
+				$result = print_r( $attachments, true );
+				// error_log( $result );
+				if ($attachments) {
+					$mail->addStringAttachment( $attachments, 'invoice.pdf', 'base64', 'application/pdf' );
+				}
+
+					$mail->IsHTML( true );
+
+					if ( is_array( $to ) ) {
+						foreach ( $to as $key => $value ) {
+							$mail->AddAddress( $value, $name[ $key ] );
+						}
+					} else {
+						$mail->AddAddress( $to, $name );
+					}
+
+					$status = $mail->Send();
+					return $status;
+
+			} catch( Exception $e ) {
+			}
+
+			return false;
+		}
 	}
 }

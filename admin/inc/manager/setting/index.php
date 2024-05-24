@@ -9,7 +9,8 @@ $active_currency = DNM_Config::get_currency();
 $date_formats       = DNM_Helper::date_formats();
 $active_date_format = DNM_Config::date_format();
 
-$prefix             = DNM_Helper::get_prefix();
+$prefix              = DNM_Helper::get_prefix();
+$reference_discount = DNM_Helper::get_referenced_discount();
 $logo               = DNM_Helper::get_logo();
 $phone_pay_settings = DNM_Config::get_phone_pay_settings();
 
@@ -83,6 +84,11 @@ $email_enable = DNM_Config::get_email_settings();
 												<div class="mb-3">
 													<label for="order_id_prefix" class="form-label"><?php echo __('Order ID Prefix', 'donation'); ?></label>
 													<input name="prefix" type="text" class="form-control" id="order_id_prefix" value="<?php echo esc_attr($prefix); ?>">
+												</div>
+
+												<div class="mb-3">
+													<label for="reference_discount" class="form-label"><?php echo __('Reference Discount', 'donation'); ?></label>
+													<input name="reference_discount" type="number" class="form-control" id="reference_discount" value="<?php echo esc_attr($reference_discount); ?>">
 												</div>
 
 												<div class="mb-3">
@@ -239,7 +245,7 @@ $email_enable = DNM_Config::get_email_settings();
 																		<input type="text" class="form-control" id="payment_confirm_subject" name="payment_confirm_subject" value="<?php echo $email_tempates['payment_confirm_subject'] ?>">
 																	</div>
 																	<div class="mb-3">
-																		<label for="payment_confirm_body" class="form-label">Email Body</label>
+																		<label for="payment_confirm_body" class="form-label">Email Body - {name},  {amount}, {transaction_id} </label>
 																		<textarea class="form-control" id="payment_confirm_body" rows="3" name="payment_confirm_body"><?php echo $email_tempates['payment_confirm_body'] ?></textarea>
 																	</div>
 																</form>

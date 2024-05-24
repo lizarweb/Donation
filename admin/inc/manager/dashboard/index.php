@@ -1,14 +1,18 @@
-<?php 
-defined( 'ABSPATH' ) || die();
+<?php
+defined('ABSPATH') || die();
 
 require_once DNM_PLUGIN_DIR_PATH . 'includes/constants.php';
 
 require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/orders/DNM_Order.php';
 
 // get Fixed orders count
-$fixed_orders = DNM_Order::get_orders_count( '11000' );
-$custom_orders = DNM_Order::get_orders_count( 'custom' );
+$fixed_orders = DNM_Order::get_orders_count('11000');
+$custom_orders = DNM_Order::get_orders_count('custom');
+$membership_orders = DNM_Order::get_orders_count('membership');
 $customers = DNM_Order::get_customers_count();
+// $referenced_users = DNM_Order::get_referenced_users_count();
+$total_orders = $fixed_orders + $custom_orders + $membership_orders;
+
 ?>
 <div class="container-fluid">
   <section id="minimal-statistics">
@@ -54,11 +58,27 @@ $customers = DNM_Order::get_customers_count();
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h3 class="card-title"><?php  echo $customers;?></h3>
-                <p class="card-text">Users</p>
+                <h3 class="card-title"><?php echo $membership_orders; ?></h3>
+                <p class="card-text">Membership Donations</p>
               </div>
               <div>
-                <i class="bi bi-people text-warning fs-3"></i>
+                <i class="bi bi-gift text-success fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-xl-3 col-sm-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-grow-1">
+                <h3 class="card-title"><?php echo $total_orders; ?></h3>
+                <p class="card-text">Total Donations</p>
+              </div>
+              <div>
+                <i class="bi bi-bookmarks text-info fs-3"></i>
               </div>
             </div>
           </div>
@@ -69,11 +89,11 @@ $customers = DNM_Order::get_customers_count();
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h3 class="card-title">423</h3>
-                <p class="card-text">References</p>
+                <h3 class="card-title"><?php echo $customers; ?></h3>
+                <p class="card-text">Users</p>
               </div>
               <div>
-                <i class="bi bi-bookmarks text-info fs-3"></i>
+                <i class="bi bi-people text-warning fs-3"></i>
               </div>
             </div>
           </div>

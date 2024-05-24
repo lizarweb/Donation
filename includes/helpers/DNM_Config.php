@@ -10,6 +10,7 @@ class DNM_Config {
 		$currency    = sanitize_text_field( $_POST['currency'] );
 		$date_format = sanitize_text_field( $_POST['date_format'] );
 		$prefix      = sanitize_text_field( $_POST['prefix'] );
+		$reference_discount      = sanitize_text_field( $_POST['reference_discount'] );
 
 		// Handle the logo upload
 		if ( isset( $_FILES['logo'] ) && $_FILES['logo']['error'] == 0 ) {
@@ -25,6 +26,7 @@ class DNM_Config {
 		update_option( 'dnm_currency', $currency );
 		update_option( 'dnm_date_format', $date_format );
 		update_option( 'dnm_prefix', $prefix );
+		update_option( 'reference_discount', $reference_discount );
 		wp_send_json_success( array( 'message' => __( 'Settings saved successfully', 'donation' ) ) );
 	}
 
