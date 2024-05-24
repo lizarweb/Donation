@@ -1,26 +1,26 @@
 <?php
-defined('ABSPATH') || die();
+defined( 'ABSPATH' ) || die();
 
 require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/DNM_Database.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Helper.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 
-if (is_user_logged_in()) {
+if ( is_user_logged_in() ) {
 	$current_user = wp_get_current_user();
-	$user_id = $current_user->ID;
+	$user_id      = $current_user->ID;
 
 
-	$customer_data = DNM_Database::getRecords(DNM_CUSTOMERS, 'user_id', $user_id);
+	$customer_data = DNM_Database::getRecords( DNM_CUSTOMERS, 'user_id', $user_id );
 
 	// Check if customer data exists
-	if ($customer_data) {
+	if ( $customer_data ) {
 		// Extract customer details from the first record
-		$customer_id    = $customer_data[0]->ID;
-		$customer_name  = $customer_data[0]->name;
-		$customer_phone = $customer_data[0]->phone;
-		$customer_email = $customer_data[0]->email;
-		$customer_city  = $customer_data[0]->city;
-		$customer_state = $customer_data[0]->state;
+		$customer_id      = $customer_data[0]->ID;
+		$customer_name    = $customer_data[0]->name;
+		$customer_phone   = $customer_data[0]->phone;
+		$customer_email   = $customer_data[0]->email;
+		$customer_city    = $customer_data[0]->city;
+		$customer_state   = $customer_data[0]->state;
 		$customer_address = $customer_data[0]->address;
 
 		// Generate a reference ID for the customer
@@ -34,8 +34,8 @@ if (is_user_logged_in()) {
 		return;
 	}
 
-	// get order data 
-	$order_data = DNM_Database::getRecords(DNM_ORDERS, 'customer_id', $customer_id);
+	// get order data
+	$order_data = DNM_Database::getRecords( DNM_ORDERS, 'customer_id', $customer_id );
 
 
 	?>
@@ -87,14 +87,14 @@ if (is_user_logged_in()) {
 										</thead>
 										<tbody>
 											<?php
-											if (!empty($order_data)) {
-												foreach ($order_data as $order) {
+											if ( ! empty( $order_data ) ) {
+												foreach ( $order_data as $order ) {
 													echo '<tr>';
-													echo '<td>' . esc_html($order->transaction_id) . '</td>';
-													echo '<td>' . esc_html($order->amount) . '</td>';
+													echo '<td>' . esc_html( $order->transaction_id ) . '</td>';
+													echo '<td>' . esc_html( $order->amount ) . '</td>';
 													// echo '<td>' . esc_html($order->payment_method) . '</td>';
 													// echo '<td>' . esc_html(ucfirst($order->type)) . '</td>';
-													echo '<td>' . esc_html(DNM_Config::date_format_text($order->created_at)) . '</td>';
+													echo '<td>' . esc_html( DNM_Config::date_format_text( $order->created_at ) ) . '</td>';
 													echo '</tr>';
 												}
 											} else {
@@ -125,28 +125,28 @@ if (is_user_logged_in()) {
 										</thead>
 										<tbody>
 											<?php
-											$total_commision = 0;
-											$referenced_users = DNM_Database::getReferencedCustomers($customer_reference_id);
-											
-											if (!empty($referenced_users)) {
-												foreach ($referenced_users as $user) {
+											$total_commision  = 0;
+											$referenced_users = DNM_Database::getReferencedCustomers( $customer_reference_id );
+
+											if ( ! empty( $referenced_users ) ) {
+												foreach ( $referenced_users as $user ) {
 													echo '<tr>';
-													echo '<td>' . esc_html($user->name) . '</td>';
-													echo '<td>' . esc_html($user->email) . '</td>';
-													echo '<td>' . esc_html($user->phone) . '</td>';
-													echo '<td>' . esc_html($user->orders[0]->amount) . '</td>';
-													echo '<td>' . esc_html($user->reference_id) . '</td>';
+													echo '<td>' . esc_html( $user->name ) . '</td>';
+													echo '<td>' . esc_html( $user->email ) . '</td>';
+													echo '<td>' . esc_html( $user->phone ) . '</td>';
+													echo '<td>' . esc_html( $user->orders[0]->amount ) . '</td>';
+													echo '<td>' . esc_html( $user->reference_id ) . '</td>';
 													echo '</tr>';
 
 													$commission_percentage = DNM_Helper::get_referenced_discount();
 
-													$commission = $user->orders[0]->amount * ($commission_percentage / 100);
+													$commission       = $user->orders[0]->amount * ( $commission_percentage / 100 );
 													$total_commision += $commission;
 												}
 											} else {
 												echo '<tr><td colspan="7" class="text-center">No referenced users found.</td></tr>';
 											}
-											
+
 											?>
 										</tbody>
 									</table>
@@ -169,7 +169,7 @@ if (is_user_logged_in()) {
 				<div class="card">
 					<div class="card-body">
 						<div class="pb-2">
-							<h4 class="card-title mb-3">Reference Balance : <?php echo DNM_Config::get_amount_text($total_commision);  ?></h4>
+							<h4 class="card-title mb-3">Reference Balance : <?php echo DNM_Config::get_amount_text( $total_commision ); ?></h4>
 
 							<ul class="ps-3 mb-0">
 								<li>Reference Percentage : <?php echo $commission_percentage; ?>%</li>
@@ -235,35 +235,35 @@ if (is_user_logged_in()) {
 			</div>
 		</div>
 	</div>
-<?php
+	<?php
 } else {
 	$args = array(
 		'echo'           => true,
 		'remember'       => true,
-		'redirect'       => (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+		'redirect'       => ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
 		'form_id'        => 'loginform',
 		'id_username'    => 'user_login',
 		'id_password'    => 'user_pass',
 		'id_remember'    => 'rememberme',
 		'id_submit'      => 'wp-submit',
-		'label_username' => __('Username'),
-		'label_password' => __('Password'),
-		'label_remember' => __('Remember Me'),
-		'label_log_in'   => __('Log In'),
+		'label_username' => __( 'Username' ),
+		'label_password' => __( 'Password' ),
+		'label_remember' => __( 'Remember Me' ),
+		'label_log_in'   => __( 'Log In' ),
 		'value_username' => '',
 		'value_remember' => false,
 	);
-?>
+	?>
 	<div class="container mt-5">
 		<div class="card">
 			<div class="card-header">
-				<h2><?php echo __('Login', 'donation'); ?></h2>
+				<h2><?php echo __( 'Login', 'donation' ); ?></h2>
 			</div>
 			<div class="card-body">
-				<?php wp_login_form($args); ?>
+				<?php wp_login_form( $args ); ?>
 			</div>
 		</div>
 	</div>
-<?php
+	<?php
 }
 ?>

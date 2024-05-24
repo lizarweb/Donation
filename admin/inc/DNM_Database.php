@@ -59,7 +59,7 @@ class DNM_Database {
 		self::insert_default_email_templates();
 		self::insert_default_email_settings();
 		self::insert_default_peyment_settings();
-		
+
 		self::add_dnm_member_role();
 	}
 
@@ -81,7 +81,7 @@ class DNM_Database {
 	public static function add_dnm_member_role() {
 		add_role(
 			'dnm_member', // System name for the role.
-			__('DNM Member'), // Display name for the role.
+			__( 'DNM Member' ), // Display name for the role.
 			array(
 				'read' => true, // True allows this capability.
 				// Additional capabilities...
@@ -213,16 +213,15 @@ class DNM_Database {
 		return $records;
 	}
 
-	public static function getReferencedCustomers($reference_id){ 
+	public static function getReferencedCustomers( $reference_id ) {
 
 		global $wpdb;
 		$customers = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . DNM_CUSTOMERS . ' WHERE reference_id = %s', $reference_id ) );
 		if ( $customers ) {
-			foreach ($customers as $customer) {
+			foreach ( $customers as $customer ) {
 				$customer->orders = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . DNM_ORDERS . ' WHERE customer_id = %d', $customer->ID ) );
 			}
 		}
-		return $customers; 
+		return $customers;
 	}
-
 }
