@@ -8,25 +8,37 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 if (is_user_logged_in()) {
 	$current_user = wp_get_current_user();
 	$user_id = $current_user->ID;
-	
+
 
 	$customer_data = DNM_Database::getRecords(DNM_CUSTOMERS, 'user_id', $user_id);
-	
-	$id = $customer_data[0]->ID;
-	$name = $customer_data[0]->name;
-	$phone = $customer_data[0]->phone;
-	$email = $customer_data[0]->email;
-	$city = $customer_data[0]->city;
-	$state = $customer_data[0]->state;
-	$address = $customer_data[0]->address;
 
-	$reference_id = 'MP'.$id;
+	// Check if customer data exists
+	if ($customer_data) {
+		// Extract customer details from the first record
+		$customerId    = $customer_data[0]->ID;
+		$customerName  = $customer_data[0]->name;
+		$customerPhone = $customer_data[0]->phone;
+		$customerEmail = $customer_data[0]->email;
+		$customerCity  = $customer_data[0]->city;
+		$customerState = $customer_data[0]->state;
+		$customerAddress = $customer_data[0]->address;
+
+		// Generate a reference ID for the customer
+		$referenceId = 'MP' . $customerId;
+	} else {
+		// Handle the case where the account does not exist in the donation system
+		echo '<div class="alert alert-danger text-center" role="alert">';
+		echo '<p>The specified account does not exist in our donation system.</p>';
+		echo '</div>';
+
+		return;
+	}
 
 	// get order data 
 	$order_data = DNM_Database::getRecords(DNM_ORDERS, 'customer_id', $id);
-	
 
-?>
+
+	?>
 	<div class="container">
 		<div class="row">
 			<div class="col-xl-8">
@@ -63,7 +75,7 @@ if (is_user_logged_in()) {
 							<h4 class="card-title mb-4">Payment History</h4>
 							<div class="row">
 								<div class="col-xl-12">
-									<table class="table sm-table table-bordered table-responsive" >
+									<table class="table sm-table table-bordered table-responsive">
 										<thead>
 											<tr>
 												<th>Transaction ID</th>
@@ -98,7 +110,7 @@ if (is_user_logged_in()) {
 							<h4 class="card-title mb-4">Referenced Users</h4>
 							<div class="row">
 								<div class="col-xl-12">
-								<table class="table sm-table table-bordered table-responsive" >
+									<table class="table sm-table table-bordered table-responsive">
 										<thead>
 											<tr>
 												<th>Name</th>
@@ -130,7 +142,7 @@ if (is_user_logged_in()) {
 											}
 											?>
 										</tbody>
-								</table>
+									</table>
 								</div>
 							</div>
 						</div>
@@ -138,7 +150,7 @@ if (is_user_logged_in()) {
 							<h4 class="card-title mb-4">Team</h4>
 							<div class="row">
 								<div class="col-xl-12">
-									
+
 								</div>
 							</div>
 						</div>
@@ -150,7 +162,7 @@ if (is_user_logged_in()) {
 				<div class="card">
 					<div class="card-body">
 						<div class="pb-2">
-							<h4 class="card-title mb-3">Wallet Balance :  <?php echo 0.00;  ?></h4>
+							<h4 class="card-title mb-3">Wallet Balance : <?php echo 0.00;  ?></h4>
 
 							<ul class="ps-3 mb-0">
 								<li>Discount percentage : </li>

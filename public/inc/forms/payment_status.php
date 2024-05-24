@@ -13,7 +13,7 @@ $user_data = get_transient( 'user_data' ); // Transaction ID to track and identi
 // check if user_data is empty
 if ( empty( $user_data ) ) {
 	?>
-	<div class="alert alert-danger" role="alert">
+	<div class="alert alert-danger text-center" role="alert">
 		<p>There was an error processing your transaction. Please try again later.</p>
 	</div>
 	<?php
@@ -115,13 +115,13 @@ try {
 			}
 		}
 		?>
-		<div class="alert alert-success" role="alert">
+		<div class="alert alert-success text-center" role="alert">
 			<p>Your transaction was successful.</p>
 		</div>
 		<?php
 	} else {
 		?>
-		<div class="alert alert-danger" role="alert">
+		<div class="alert alert-danger text-center" role="alert">
 			<p>Your transaction was not successful. Please try again later.</p>
 		</div>
 		<?php
@@ -131,7 +131,7 @@ try {
 	// error_log($e->getMessage());
 	// Handle exception here, e.g., show a user-friendly error message
 	?>
-	<div class="alert alert-danger" role="alert">
+	<div class="alert alert-danger text-center" role="alert">
 		<p>There was an error processing your transaction. Please try again later.</p>
 	</div>
 	<?php
