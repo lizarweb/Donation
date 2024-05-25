@@ -77,7 +77,7 @@ $customers = DNM_Database::getReferencedCustomers($reference_code);
 										$total_commission += $commission;
 									}
 								} else {
-									echo '<tr><td colspan="5" class="text-center">This user does not have referenced users.</td></tr>';
+									echo '<tr><td colspan="6" class="text-center">This user does not have referenced users.</td></tr>';
 								}
 								?>
 							</tbody>
