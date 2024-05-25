@@ -163,7 +163,7 @@ class DNM_Order {
 					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
 					$order->transaction_id ? $order->transaction_id : '-',
 					'MP' . $order->reference ? 'MP' . $order->reference : '-',
-					$order->reference_id ? $order->reference_id : '-',
+					$order->referenced_by ? $order->referenced_by : '-',
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=reference&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people-fill"></i></a>
