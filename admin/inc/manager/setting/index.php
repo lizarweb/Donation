@@ -245,7 +245,7 @@ $email_enable = DNM_Config::get_email_settings();
 																		<input type="text" class="form-control" id="payment_confirm_subject" name="payment_confirm_subject" value="<?php echo $email_tempates['payment_confirm_subject']; ?>">
 																	</div>
 																	<div class="mb-3">
-																		<label for="payment_confirm_body" class="form-label">Email Body - {name},  {amount}, {transaction_id} </label>
+																		<label for="payment_confirm_body" class="form-label">Email Body - {name},  {amount}, {transaction_id}, {reference_id} </label>
 																		<textarea class="form-control" id="payment_confirm_body" rows="3" name="payment_confirm_body"><?php echo $email_tempates['payment_confirm_body']; ?></textarea>
 																	</div>
 																</form>

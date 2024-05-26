@@ -133,6 +133,7 @@ try {
 						'{name}'           => $user['name'],
 						'{amount}'         => $user['amount'],
 						'{transaction_id}' => $user_data['transactionID'],
+						'{reference_id}'   => $reference_id,
 					);
 
 					$subject = strtr( $subject, $placeholders );

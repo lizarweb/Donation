@@ -167,9 +167,9 @@ class DNM_Registration {
 		$errors = array();
 
 		// check if amount is not 101, 501, or 11000
-		if ( $amount !== 101 && $amount !== 501 && $amount !== 11000 ) {
-			$errors['amount'] = 'Amount should be 101, 501, or 11000';
-		}
+		// if ( $amount !== 101 && $amount !== 501 && $amount !== 11000 ) {
+		// 	$errors['amount'] = 'Amount should be 101, 501, or 11000';
+		// }
 
 		// validate reference_id only if it's not empty
 		if ( ! empty( $reference_id ) ) {

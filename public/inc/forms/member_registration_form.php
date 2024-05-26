@@ -47,13 +47,19 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 						<input class="dnm-form-check-input" type="radio" id="amount_101" name="amount" value="101">
 						<label class="dnm-form-check-label" for="amount_101"><?php esc_attr_e( DNM_Config::get_amount_text( 101 ) ); ?></label>
 					</div>
+
+					<div class="dnm-form-check">
+						<input class="dnm-form-check-input" type="radio" id="amount_201" name="amount" value="201">
+						<label class="dnm-form-check-label" for="amount_201"><?php esc_attr_e( DNM_Config::get_amount_text( 201 ) ); ?></label>
+					</div>
+
 					<div class="dnm-form-check">
 						<input class="dnm-form-check-input" type="radio" id="amount_501" name="amount" value="501">
 						<label class="dnm-form-check-label" for="amount_501"><?php esc_attr_e( DNM_Config::get_amount_text( 501 ) ); ?></label>
 					</div>
 					<div class="dnm-form-check">
-						<input class="dnm-form-check-input" type="radio" id="amount_11000" name="amount" value="11000" checked>
-						<label class="dnm-form-check-label" for="amount_11000"><?php esc_attr_e( DNM_Config::get_amount_text( 11000 ) ); ?></label>
+						<input class="dnm-form-check-input" type="radio" id="amount_11000" name="amount" value="1100" checked>
+						<label class="dnm-form-check-label" for="amount_11000"><?php esc_attr_e( DNM_Config::get_amount_text( 1100 ) ); ?></label>
 					</div>
 				</div>
 
