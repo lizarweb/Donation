@@ -75,7 +75,7 @@ class DNM_Database {
 	}
 
 	public static function uninstall() {
-		self::dropTables();
+		// self::dropTables();
 	}
 
 	public static function add_dnm_member_role() {

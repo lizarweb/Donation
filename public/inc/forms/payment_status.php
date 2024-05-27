@@ -36,7 +36,7 @@ if ( $user_data ) {
 		if ( ! $exists_order ) {
 			try {
 				global $wpdb;
-				$wpdb->query('BEGIN');
+				$wpdb->query( 'BEGIN' );
 
 				$customerData = array(
 					'name'         => $user['name'],
@@ -49,7 +49,7 @@ if ( $user_data ) {
 					'created_at'   => current_time( 'mysql' ),
 				);
 
-				if (!isset($customer_id)) {
+				if ( ! isset( $customer_id ) ) {
 					$customer_id = DNM_Database::insertIntoTable( DNM_CUSTOMERS, $customerData );
 					if ( ! $customer_id ) {
 						throw new Exception( 'Failed to insert customer data' );
@@ -93,7 +93,7 @@ if ( $user_data ) {
 
 				// Check if the order already exists before inserting
 				$exists_order = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $user_data['transactionID'] );
-				if (!$exists_order) {
+				if ( ! $exists_order ) {
 					$order_id = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
 					if ( ! $order_id ) {
 						throw new Exception( 'Failed to insert order data' );
@@ -146,4 +146,10 @@ if ( $user_data ) {
 		</div>
 		<?php
 	}
+} else {
+	?>
+	<div class="alert alert-success text-center" role="alert">
+		<p>Your transaction was successful. Thank you for your payment.</p>
+	</div>
+	<?php
 }
