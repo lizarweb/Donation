@@ -42,7 +42,7 @@ class DNM_Registration {
 		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
 		$phonepe            = PhonePe::init(
 			$phone_pay_settings['phone_pay_merchant_id'], // Merchant ID
-			// $phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
+			$phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
 			$phone_pay_settings['phone_pay_salt_key'], // Salt Key
 			$phone_pay_settings['phone_pay_salt_index'], // Salt Index
 			$phone_pay_settings['phone_pay_redirect_url'], // Redirect URL, can be defined on per transaction basis
@@ -168,7 +168,7 @@ class DNM_Registration {
 
 		// check if amount is not 101, 501, or 11000
 		// if ( $amount !== 101 && $amount !== 501 && $amount !== 11000 ) {
-		// 	$errors['amount'] = 'Amount should be 101, 501, or 11000';
+		// $errors['amount'] = 'Amount should be 101, 501, or 11000';
 		// }
 
 		// validate reference_id only if it's not empty
@@ -194,12 +194,11 @@ class DNM_Registration {
 
 		// // Below are the Test Details for Standard Checkout UAT, you can get your own from PhonePe Team. Make sure to keep the Salt Key and Salt Index safe (in environment variables or .env file).
 		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
-		// $merchantId         = $phone_pay_settings['phone_pay_merchant_id'];
-		// $merchantUserId     = $phone_pay_settings['phone_pay_merchant_user_id'];
-		// $saltKey            = $phone_pay_settings['phone_pay_salt_key'];
-		// $saltIndex          = $phone_pay_settings['phone_pay_salt_index'];
-		// $callbackUrl        = $phone_pay_settings['phone_pay_redirect_url'];
-
+		$merchantId         = $phone_pay_settings['phone_pay_merchant_id'];
+		$merchantUserId     = $phone_pay_settings['phone_pay_merchant_user_id'];
+		$saltKey            = $phone_pay_settings['phone_pay_salt_key'];
+		$saltIndex          = $phone_pay_settings['phone_pay_salt_index'];
+		$callbackUrl        = $phone_pay_settings['phone_pay_redirect_url'];
 
 		$amountInPaisa = $amount * 100; // Amount in Paisa
 		$userMobile    = $phone; // User Mobile Number
@@ -212,18 +211,33 @@ class DNM_Registration {
 		// Save the transaction ID in transient for 5 min.
 		set_transient( 'user_data', $user_data, 30 * MINUTE_IN_SECONDS );
 
-		$phonepe            = PhonePe::init(
-			$phone_pay_settings['phone_pay_merchant_id'], // Merchant ID
-			$phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
-			$phone_pay_settings['phone_pay_salt_key'], // Salt Key
-			$phone_pay_settings['phone_pay_salt_index'], // Salt Index
-			$phone_pay_settings['phone_pay_redirect_url'], // Redirect URL, can be defined on per transaction basis
-			$phone_pay_settings['phone_pay_redirect_url'], // Callback URL, can be defined on per transaction basis
-			$phone_pay_settings['phone_pay_mode'] // or "PROD"
-		);
+		$subscriptionId = 'SUBS' . date( 'ymdHis' );
+		$authRequestId  = 'AUTH' . date( 'ymdHis' );
 
-		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
-		echo $redirectURL;
-		exit;
+		// create phonepe user subscription here.
+		$subscription = DNM_Helper::create_phonepe_user_subscription( $subscriptionId, $userMobile, $amountInPaisa, $frequency = 'MONTHLY', $recurringCount = 12 );
+
+		if ($subscription['state'] === 'CREATED' ) {
+			// pay using subscription
+			$responseData = DNM_Helper::pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl,  'ANDROID',  'UPI_QR','com.phonepe.app' );
+			var_dump($responseData ); die;
+
+		}
+
+
+
+		// $phonepe            = PhonePe::init(
+		// $phone_pay_settings['phone_pay_merchant_id'], // Merchant ID
+		// $phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
+		// $phone_pay_settings['phone_pay_salt_key'], // Salt Key
+		// $phone_pay_settings['phone_pay_salt_index'], // Salt Index
+		// $phone_pay_settings['phone_pay_redirect_url'], // Redirect URL, can be defined on per transaction basis
+		// $phone_pay_settings['phone_pay_redirect_url'], // Callback URL, can be defined on per transaction basis
+		// $phone_pay_settings['phone_pay_mode'] // or "PROD"
+		// );
+
+		// $redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
+		// echo $redirectURL;
+		// exit;
 	}
 }

@@ -117,7 +117,7 @@ if ( is_user_logged_in() ) {
 												<th>Email</th>
 												<th>Phone</th>
 												<th>Amount</th>
-												<!-- <th>City</th> -->
+												<!-- <th>District</th> -->
 												<!-- <th>State</th> -->
 												<!-- <th>Address</th> -->
 												<th>Referenced BY</th>
@@ -138,7 +138,7 @@ if ( is_user_logged_in() ) {
 													echo '<td>' . esc_html( $user->reference_id ) . '</td>';
 													echo '</tr>';
 
-													
+
 
 													$commission       = $user->orders[0]->amount * ( $commission_percentage / 100 );
 													$total_commision += $commission;
@@ -211,7 +211,7 @@ if ( is_user_logged_in() ) {
 											<td><?php echo $customer_email; ?></td>
 										</tr>
 										<tr>
-											<th scope="row">City</th>
+											<th scope="row">District</th>
 											<td><?php echo $customer_city; ?></td>
 										</tr>
 										<tr>

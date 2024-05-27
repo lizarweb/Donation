@@ -61,7 +61,7 @@ final class Logging
     public function teamCity(): TeamCity
     {
         if ($this->teamCity === null) {
-            throw new Exception('Logger "Team City" is not configured');
+            throw new Exception('Logger "Team District" is not configured');
         }
 
         return $this->teamCity;

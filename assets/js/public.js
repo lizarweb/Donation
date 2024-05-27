@@ -35,7 +35,8 @@
                         for (let field in response.data) {
                             $(`#${field}`).before(`<div style="color: red;" class="alert alert-danger">${response.data[field]}</div>`);
                         }
-                    } else {
+                    }
+					 else {
                         window.location.href = response;
                     }
                 },

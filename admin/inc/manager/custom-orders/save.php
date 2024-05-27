@@ -42,7 +42,7 @@ if (isset($_GET['id'])) {
 					echo DNM_Helper::generate_form_field('name', 'Name', 'text', $order_data['name']);
 					echo DNM_Helper::generate_form_field('email', 'Email', 'email', $order_data['email']);
 					echo DNM_Helper::generate_form_field('phone', 'Phone', 'text', $order_data['phone']);
-					echo DNM_Helper::generate_form_field('city', 'City', 'text', $order_data['city']);
+					echo DNM_Helper::generate_form_field('city', 'District', 'text', $order_data['city']);
 					echo DNM_Helper::generate_form_field('state', 'State', 'text', $order_data['state']);
 					echo DNM_Helper::generate_form_field('address', 'Address', 'text', $order_data['address']);
 					echo DNM_Helper::generate_form_field('amount', 'Amount', 'number', $order_data['amount']);

@@ -7,14 +7,13 @@ class DNM_Helper {
 	public static function checkTransactionStatus( $merchantId, $merchantTransactionId, $saltKey, $saltIndex ) {
 
 		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
-		$mode = $phone_pay_settings['phone_pay_mode'];
+		$mode               = $phone_pay_settings['phone_pay_mode'];
 
-		if ($mode == 'DEV' ) {
+		if ( $mode == 'DEV' ) {
 			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/{$merchantId}/{$merchantTransactionId}";
 		} else {
 			$url = "https://api.phonepe.com/apis/hermes/status/{$merchantId}/{$merchantTransactionId}";
 		}
-
 
 		$headers = array(
 			'Content-Type: application/json',
@@ -227,6 +226,48 @@ class DNM_Helper {
 		);
 	}
 
+	public static function indian_states_list() {
+		return array(
+			'AP' => 'Andhra Pradesh',
+			'AR' => 'Arunachal Pradesh',
+			'AS' => 'Assam',
+			'BR' => 'Bihar',
+			'CT' => 'Chhattisgarh',
+			'GA' => 'Goa',
+			'GJ' => 'Gujarat',
+			'HR' => 'Haryana',
+			'HP' => 'Himachal Pradesh',
+			'JK' => 'Jammu and Kashmir',
+			'JH' => 'Jharkhand',
+			'KA' => 'Karnataka',
+			'KL' => 'Kerala',
+			'MP' => 'Madhya Pradesh',
+			'MH' => 'Maharashtra',
+			'MN' => 'Manipur',
+			'ML' => 'Meghalaya',
+			'MZ' => 'Mizoram',
+			'NL' => 'Nagaland',
+			'OR' => 'Odisha',
+			'PB' => 'Punjab',
+			'RJ' => 'Rajasthan',
+			'SK' => 'Sikkim',
+			'TN' => 'Tamil Nadu',
+			'TG' => 'Telangana',
+			'TR' => 'Tripura',
+			'UP' => 'Uttar Pradesh',
+			'UT' => 'Uttarakhand',
+			'WB' => 'West Bengal',
+			'AN' => 'Andaman and Nicobar Islands',
+			'CH' => 'Chandigarh',
+			'DN' => 'Dadra and Nagar Haveli',
+			'DD' => 'Daman and Diu',
+			'DL' => 'Delhi',
+			'LD' => 'Lakshadweep',
+			'PY' => 'Puducherry',
+		);
+	}
+
+
 	public static function date_formats() {
 		return array(
 			'd-m-Y' => 'dd-mm-yyyy',
@@ -355,7 +396,7 @@ class DNM_Helper {
 	}
 
 
-	public static function create_subscription( $subscriptionId, $mobileNumber, $amount, $frequency = 'MONTHLY', $recurringCount = 12 ) {
+	public static function create_phonepe_user_subscription( $subscriptionId, $phone, $amount, $frequency = 'MONTHLY', $recurringCount = 12 ) {
 
 		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
 
@@ -369,7 +410,7 @@ class DNM_Helper {
 			'amount'                 => $amount,
 			'frequency'              => $frequency,
 			'recurringCount'         => $recurringCount,
-			'mobileNumber'           => $mobileNumber,
+			'mobileNumber'           => $phone,
 			'deviceContext'          => array(
 				'phonePeVersionCode' => 400922,
 			),
@@ -430,7 +471,7 @@ class DNM_Helper {
 		}
 	}
 
-	public static function setup_mandate_or_accept_payment( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $deviceOS = 'ANDROID', $paymentType = 'UPI_COLLECT', $targetApp = 'com.phonepe.app' ) {
+	public static function pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $deviceOS = 'ANDROID', $paymentType = 'UPI_QR', $targetApp = 'com.phonepe.app' ) {
 		// Your JSON payload
 		$data = array(
 			'merchantId'        => $merchantId,
@@ -439,7 +480,6 @@ class DNM_Helper {
 			'authRequestId'     => $authRequestId,
 			'paymentInstrument' => array(
 				'type' => $paymentType,
-				'vpa'  => 'test-vpa@ybl',
 			),
 		);
 
