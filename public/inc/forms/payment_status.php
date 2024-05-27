@@ -36,7 +36,7 @@ if ( $user_data ) {
 		if ( ! $exists_order ) {
 			try {
 				global $wpdb;
-				$wpdb->query( 'START TRANSACTION' );
+				$wpdb->query('BEGIN');
 
 				$customerData = array(
 					'name'         => $user['name'],
@@ -48,6 +48,13 @@ if ( $user_data ) {
 					'reference_id' => $reference_id,
 					'created_at'   => current_time( 'mysql' ),
 				);
+
+				if (!isset($customer_id)) {
+					$customer_id = DNM_Database::insertIntoTable( DNM_CUSTOMERS, $customerData );
+					if ( ! $customer_id ) {
+						throw new Exception( 'Failed to insert customer data' );
+					}
+				}
 
 				if ( $payment_type === 'membership' ) {
 					$customer_exits = DNM_Database::getRecord( DNM_CUSTOMERS, 'email', $user['email'] );
@@ -74,12 +81,6 @@ if ( $user_data ) {
 					}
 				}
 
-				$customer_id = DNM_Database::insertIntoTable( DNM_CUSTOMERS, $customerData );
-
-				if ( ! $customer_id ) {
-					throw new Exception( 'Failed to insert customer data' );
-				}
-
 				$order_data = array(
 					'order_id'       => DNM_Helper::getNextOrderId( $payment_type ),
 					'transaction_id' => $user_data['transactionID'], // Corrected 'transaction_id' to 'transaction_id'
@@ -90,13 +91,16 @@ if ( $user_data ) {
 					'created_at'     => current_time( 'mysql' ),
 				);
 
-
-				$order_id = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
-
-
-
-				if ( ! $order_id ) {
-					throw new Exception( 'Failed to insert order data' );
+				// Check if the order already exists before inserting
+				$exists_order = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $user_data['transactionID'] );
+				if (!$exists_order) {
+					$order_id = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
+					if ( ! $order_id ) {
+						throw new Exception( 'Failed to insert order data' );
+					}
+				} else {
+					// If order already exists, get the order_id from the existing record
+					$order_id = $exists_order['id'];
 				}
 
 				$wpdb->query( 'COMMIT' );
