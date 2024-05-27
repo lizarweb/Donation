@@ -61,7 +61,7 @@ class Dnm_menu {
 
 	// Custom Orders.
 	public static function donation_custom_orders() {
-		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/Custom-orders/route.php';
+		require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/custom-orders/route.php';
 	}
 
 	// Memberships Orders.

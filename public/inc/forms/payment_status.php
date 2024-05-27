@@ -8,25 +8,12 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/vendor/autoload.php';
 
 use PhonePe\PhonePe;
 
-$user_data = get_transient( 'user_data' ); // Transaction ID to track and identify the transaction, make sure to save this in your database.
+$user_data = get_transient( 'user_data' ); // Transaction ID
 
-// check if user_data is empty
-if ( empty( $user_data ) ) {
-	?>
-	<div class="alert alert-danger text-center" role="alert">
-		<p>There was an error processing your transaction. Please try again later.</p>
-	</div>
-	<?php
-	return;
-}
-
-try {
-
-	$user         = $user_data['user'];
-	$payment_type = isset( $user['payment_type'] ) ? $user['payment_type'] : 'membership';
-	$reference_id = isset( $user['reference_id'] ) ? $user['reference_id'] : null;
-
-	// $transaction_id = 'MERCHANT' . rand( 100000, 999999 ); // Transaction ID to track and identify the transaction, make sure to save this in your database.
+if ( $user_data ) {
+	$user               = $user_data['user'];
+	$payment_type       = isset( $user['payment_type'] ) ? $user['payment_type'] : 'membership';
+	$reference_id       = isset( $user['reference_id'] ) ? $user['reference_id'] : null;
 	$phone_pay_settings = DNM_Config::get_phone_pay_settings();
 	if ( empty( $phone_pay_settings ) ) {
 		throw new Exception( 'Phone pay settings are not configured properly.' );
@@ -40,20 +27,17 @@ try {
 		$phone_pay_settings['phone_pay_redirect_url'], // Callback URL, can be defined on per transaction basis
 	);
 
-	$success = $phonepe->standardCheckout()->isTransactionSuccessByTransactionId( $user_data['transactionID'] ); // Returns true if transaction is successful, false otherwise.
-
-	if ( $success ) {
-		global $wpdb;
-
-
+	$response_success = $phonepe->standardCheckout()->isTransactionSuccessByTransactionId( $user_data['transactionID'] ); // Returns true if transaction is successful, false otherwise.
+	if ( $response_success ) {
 		// check if transactionID already exists.
-		$exists = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $user_data['transactionID'] );
+		$exists_order = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $user_data['transactionID'] );
 
 		// If transactionID does not exist, then proceed
-		if ( ! $exists ) {
-			$wpdb->query( 'BEGIN' );
-
+		if ( ! $exists_order ) {
 			try {
+				global $wpdb;
+				$wpdb->query( 'START TRANSACTION' );
+
 				$customerData = array(
 					'name'         => $user['name'],
 					'email'        => $user['email'],
@@ -66,31 +50,27 @@ try {
 				);
 
 				if ( $payment_type === 'membership' ) {
-					// register WordPress user in user table with role 'dnm_member'
-
-					$newpass = wp_generate_password();
-					$user_id = wp_insert_user(
-						array(
-							'user_login' => $user['email'],
-							'user_pass'  => $newpass,
-							'user_email' => $user['email'],
-							'role'       => 'dnm_member',
-						)
-					);
-
-					$customerData['user_id'] = $user_id;
-					
-					// send email to customer with username and password
-					$subject = 'Your account has been created';
-					$body    = 'Your account has been created. Here are your login details:<br>';
-					$body   .= 'Username: ' . $user['email'] . '<br>';
-					$body   .= 'Password: ' . $newpass . '<br>';
-
-
-					wp_mail( $user['email'], $subject, $body );
-
-					if ( is_wp_error( $user_id ) ) {
-						throw new Exception( 'Failed to register user' );
+					$customer_exits = DNM_Database::getRecord( DNM_CUSTOMERS, 'email', $user['email'] );
+					if ( ! $customer_exits ) {
+						$new_pass = wp_generate_password();
+						$user_id  = wp_insert_user(
+							array(
+								'user_login' => $user['email'],
+								'user_pass'  => $new_pass,
+								'user_email' => $user['email'],
+								'role'       => 'dnm_member',
+							)
+						);
+						if ( is_wp_error( $user_id ) ) {
+							throw new Exception( 'Failed to register user' );
+						}
+						$customerData['user_id'] = $user_id;
+						// send email to customer with username and password
+						$subject = 'Your account has been created';
+						$body    = 'Your account has been created. Here are your login details:<br>';
+						$body   .= 'Username: ' . $user['email'] . '<br>';
+						$body   .= 'Password: ' . $new_pass . '<br>';
+						wp_mail( $user['email'], $subject, $body );
 					}
 				}
 
@@ -102,7 +82,7 @@ try {
 
 				$order_data = array(
 					'order_id'       => DNM_Helper::getNextOrderId( $payment_type ),
-					'transaction_id' => $user_data['transactionID'], // Corrected 'tnasaction_id' to 'transaction_id'
+					'transaction_id' => $user_data['transactionID'], // Corrected 'transaction_id' to 'transaction_id'
 					'type'           => $payment_type,
 					'payment_method' => 'Phonepe',
 					'customer_id'    => $customer_id,
@@ -121,13 +101,22 @@ try {
 
 				$wpdb->query( 'COMMIT' );
 
-				// check if email Notfications are enabled.
+				?>
+				<div class="alert alert-success text-center" role="alert">
+					<p>Your transaction was successful. Thank you for your payment.</p>
+				</div>
+				<?php
+
+				// Clear the transient
+				delete_transient( 'user_data' );
+
+				// check if email Notifications are enabled.
 				$email_enable = DNM_Config::get_email_settings();
 				if ( $email_enable['email_enable'] ) {
 					// send email to customer.
-					$email_tempates = DNM_Config::get_email_templates();
-					$subject        = $email_tempates['payment_confirm_subject'];
-					$body           = $email_tempates['payment_confirm_body'];
+					$email_templates = DNM_Config::get_email_templates();
+					$subject         = $email_templates['payment_confirm_subject'];
+					$body            = $email_templates['payment_confirm_body'];
 
 					$placeholders = array(
 						'{name}'           => $user['name'],
@@ -146,11 +135,6 @@ try {
 				error_log( $e->getMessage() ); // Log the error message for debugging
 			}
 		}
-		?>
-		<div class="alert alert-success text-center" role="alert">
-			<p>Your transaction was successful.</p>
-		</div>
-		<?php
 	} else {
 		?>
 		<div class="alert alert-danger text-center" role="alert">
@@ -158,13 +142,4 @@ try {
 		</div>
 		<?php
 	}
-} catch ( Exception $e ) {
-	$wpdb->query( 'ROLLBACK' );
-	// error_log($e->getMessage());
-	// Handle exception here, e.g., show a user-friendly error message
-	?>
-	<div class="alert alert-danger text-center" role="alert">
-		<p>There was an error processing your transaction. Please try again later.</p>
-	</div>
-	<?php
 }
