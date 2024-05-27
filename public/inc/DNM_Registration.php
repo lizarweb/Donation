@@ -42,7 +42,7 @@ class DNM_Registration {
 		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
 		$phonepe            = PhonePe::init(
 			$phone_pay_settings['phone_pay_merchant_id'], // Merchant ID
-			$phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
+			// $phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
 			$phone_pay_settings['phone_pay_salt_key'], // Salt Key
 			$phone_pay_settings['phone_pay_salt_index'], // Salt Index
 			$phone_pay_settings['phone_pay_redirect_url'], // Redirect URL, can be defined on per transaction basis
@@ -60,7 +60,7 @@ class DNM_Registration {
 			'transactionID' => $transactionID,
 		);
 		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 5 * MINUTE_IN_SECONDS );
+		set_transient( 'user_data', $user_data, 30 * MINUTE_IN_SECONDS );
 
 		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
 		// You can also define the redirect and callback URL on per transaction basis
@@ -138,7 +138,7 @@ class DNM_Registration {
 			'transactionID' => $transactionID,
 		);
 		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 5 * MINUTE_IN_SECONDS );
+		set_transient( 'user_data', $user_data, 30 * MINUTE_IN_SECONDS );
 
 		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
 		echo $redirectURL;
@@ -200,7 +200,7 @@ class DNM_Registration {
 		// $saltIndex          = $phone_pay_settings['phone_pay_salt_index'];
 		// $callbackUrl        = $phone_pay_settings['phone_pay_redirect_url'];
 
-		
+
 		$amountInPaisa = $amount * 100; // Amount in Paisa
 		$userMobile    = $phone; // User Mobile Number
 		$transactionID = 'TRANS' . date( 'ymdHis' ); // Transaction ID to track and identify the transaction, make sure to save this in your database.
@@ -210,7 +210,7 @@ class DNM_Registration {
 			'transactionID' => $transactionID,
 		);
 		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 5 * MINUTE_IN_SECONDS );
+		set_transient( 'user_data', $user_data, 30 * MINUTE_IN_SECONDS );
 
 		$phonepe            = PhonePe::init(
 			$phone_pay_settings['phone_pay_merchant_id'], // Merchant ID

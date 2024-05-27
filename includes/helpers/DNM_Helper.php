@@ -12,7 +12,7 @@ class DNM_Helper {
 		if ($mode == 'DEV' ) {
 			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/{$merchantId}/{$merchantTransactionId}";
 		} else {
-			$url = "https://api.phonepe.com/apis/pg/v1/status/{$merchantId}/{$merchantTransactionId}";
+			$url = "https://api.phonepe.com/apis/hermes/status/{$merchantId}/{$merchantTransactionId}";
 		}
 
 

@@ -11,36 +11,30 @@ use PhonePe\PhonePe;
 $user_data = get_transient( 'user_data' ); // Transaction ID
 
 if ( $user_data ) {
-	$user               = $user_data['user'];
-	$payment_type       = isset( $user['payment_type'] ) ? $user['payment_type'] : 'membership';
-	$reference_id       = isset( $user['reference_id'] ) ? $user['reference_id'] : null;
+	$user                  = $user_data['user'];
+	$payment_type          = isset( $user['payment_type'] ) ? $user['payment_type'] : 'membership';
+	$reference_id          = isset( $user['reference_id'] ) ? $user['reference_id'] : null;
 	$merchantTransactionId = $user_data['transactionID'];
-	$phone_pay_settings = DNM_Config::get_phone_pay_settings();
+	$phone_pay_settings    = DNM_Config::get_phone_pay_settings();
 	if ( empty( $phone_pay_settings ) ) {
 		throw new Exception( 'Phone pay settings are not configured properly.' );
 	}
-	// $phonepe = PhonePe::init(
-	// 	$phone_pay_settings['phone_pay_merchant_id'], // Merchant ID
-	// 	$phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
-	// 	$phone_pay_settings['phone_pay_salt_key'], // Salt Key
-	// 	$phone_pay_settings['phone_pay_salt_index'], // Salt Index
-	// 	$phone_pay_settings['phone_pay_redirect_url'], // Redirect URL, can be defined on per transaction basis
-	// 	$phone_pay_settings['phone_pay_redirect_url'], // Callback URL, can be defined on per transaction basis
-	// );
 
-	// $response_success = $phonepe->standardCheckout()->isTransactionSuccessByTransactionId( $user_data['transactionID'] ); // Returns true if transaction is successful, false otherwise.
-
-
-	$transactionStatus = DNM_Helper::checkTransactionStatus(
-		$phone_pay_settings['phone_pay_merchant_id'],
-		$merchantTransactionId, // This should be the ID of the transaction you want to check
-		$phone_pay_settings['phone_pay_salt_key'],
-		$phone_pay_settings['phone_pay_salt_index']
+	$phonepe = PhonePe::init(
+		$phone_pay_settings['phone_pay_merchant_id'], // Merchant ID
+		$phone_pay_settings['phone_pay_merchant_user_id'], // Merchant User ID
+		$phone_pay_settings['phone_pay_salt_key'], // Salt Key
+		$phone_pay_settings['phone_pay_salt_index'], // Salt Index
+		$phone_pay_settings['phone_pay_redirect_url'], // Redirect URL, can be defined on per transaction basis
+		$phone_pay_settings['phone_pay_redirect_url'], // Callback URL, can be defined on per transaction basis
+        $phone_pay_settings['phone_pay_mode']
 	);
 
-	if ( $transactionStatus['success'] ) {
+	$response_success = $phonepe->standardCheckout()->isTransactionSuccessByTransactionId( $merchantTransactionId );
+
+	if ( $response_success ) {
 		// check if transactionID already exists.
-		$exists_order = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $user_data['transactionID'] );
+		$exists_order = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $merchantTransactionId );
 
 		// If transactionID does not exist, then proceed
 		if ( ! $exists_order ) {
@@ -93,7 +87,7 @@ if ( $user_data ) {
 
 				$order_data = array(
 					'order_id'       => DNM_Helper::getNextOrderId( $payment_type ),
-					'transaction_id' => $user_data['transactionID'], // Corrected 'transaction_id' to 'transaction_id'
+					'transaction_id' => $merchantTransactionId, // Corrected 'transaction_id' to 'transaction_id'
 					'type'           => $payment_type,
 					'payment_method' => 'Phonepe',
 					'customer_id'    => $customer_id,
@@ -102,7 +96,7 @@ if ( $user_data ) {
 				);
 
 				// Check if the order already exists before inserting
-				$exists_order = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $user_data['transactionID'] );
+				$exists_order = DNM_Database::getRecord( DNM_ORDERS, 'transaction_id', $merchantTransactionId );
 				if ( ! $exists_order ) {
 					$order_id = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
 					if ( ! $order_id ) {
@@ -135,7 +129,7 @@ if ( $user_data ) {
 					$placeholders = array(
 						'{name}'           => $user['name'],
 						'{amount}'         => $user['amount'],
-						'{transaction_id}' => $user_data['transactionID'],
+						'{transaction_id}' => $merchantTransactionId,
 						'{reference_id}'   => $reference_id,
 					);
 
