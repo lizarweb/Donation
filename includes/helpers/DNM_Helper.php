@@ -3,6 +3,35 @@ defined( 'ABSPATH' ) || die();
 
 class DNM_Helper {
 
+
+	public static function checkTransactionStatus( $merchantId, $merchantTransactionId, $saltKey, $saltIndex ) {
+
+		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
+		$mode = $phone_pay_settings['phone_pay_mode'];
+
+		if ($mode == 'DEV' ) {
+			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/{$merchantId}/{$merchantTransactionId}";
+		} else {
+			$url = "https://api.phonepe.com/apis/pg/v1/status/{$merchantId}/{$merchantTransactionId}";
+		}
+
+
+		$headers = array(
+			'Content-Type: application/json',
+			'X-VERIFY: ' . hash( 'sha256', "/pg/v1/status/{$merchantId}/{$merchantTransactionId}" . $saltKey ) . '###' . $saltIndex,
+			'X-MERCHANT-ID: ' . $merchantId,
+		);
+
+		$ch = curl_init( $url );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+		$response = curl_exec( $ch );
+		curl_close( $ch );
+
+		return json_decode( $response, true );
+	}
+
 	public static function get_prefix() {
 
 		$prefix = get_option( 'dnm_prefix' );
@@ -20,10 +49,10 @@ class DNM_Helper {
 		return $discount;
 	}
 
-	public static function get_referenced_code($reference_id) {
+	public static function get_referenced_code( $reference_id ) {
 		$code = get_option( 'dnm_referenced_code' );
 		if ( ! $code ) {
-			$code = 'MP'.$reference_id;
+			$code = 'MP' . $reference_id;
 		}
 		return $code;
 	}
@@ -455,20 +484,19 @@ class DNM_Helper {
 		return $responseData;
 	}
 
-	public static function send_email(  $to, $subject, $body, $name = '', $email_for = '', $placeholders = array(), $attachments = null ) {
+	public static function send_email( $to, $subject, $body, $name = '', $email_for = '', $placeholders = array(), $attachments = null ) {
 
-		$email_carrier  = 'wp_mail';
+		$email_carrier = 'wp_mail';
 
 		if ( 'wp_mail' === $email_carrier ) {
 
 			$from_email = apply_filters( 'wp_mail_from', get_option( 'admin_email' ) );
-			$user = get_userdata(1); // 1 is the ID of the admin user
-			$from_name = $user->user_login;
-
+			$user       = get_userdata( 1 ); // 1 is the ID of the admin user
+			$from_name  = $user->user_login;
 
 			if ( is_array( $to ) ) {
 				foreach ( $to as $key => $value ) {
-					$to[ $key ]	= $name[ $key ] . ' <' . $value . '>';
+					$to[ $key ] = $name[ $key ] . ' <' . $value . '>';
 				}
 			} else {
 				if ( ! empty( $name ) ) {
@@ -488,12 +516,11 @@ class DNM_Helper {
 		} elseif ( 'smtp' === $email_carrier ) {
 			// $smtp       = WLSM_M_Setting::get_settings_smtp(  );
 
-
 			global $wp_version;
-	
-			require_once(ABSPATH . WPINC . '/PHPMailer/PHPMailer.php');
-			require_once(ABSPATH . WPINC . '/PHPMailer/SMTP.php');
-			require_once(ABSPATH . WPINC . '/PHPMailer/Exception.php');
+
+			require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+			require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+			require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
 			$mail = new PHPMailer\PHPMailer\PHPMailer( true );
 
 			try {
@@ -512,7 +539,7 @@ class DNM_Helper {
 					if ( ! empty( $encryption ) ) {
 						$mail->SMTPSecure = $encryption;
 					} else {
-						$mail->SMTPSecure = NULL;
+						$mail->SMTPSecure = null;
 					}
 					$mail->Port = $port;
 				}
@@ -526,24 +553,24 @@ class DNM_Helper {
 
 				$result = print_r( $attachments, true );
 				// error_log( $result );
-				if ($attachments) {
+				if ( $attachments ) {
 					$mail->addStringAttachment( $attachments, 'invoice.pdf', 'base64', 'application/pdf' );
 				}
 
 					$mail->IsHTML( true );
 
-					if ( is_array( $to ) ) {
-						foreach ( $to as $key => $value ) {
-							$mail->AddAddress( $value, $name[ $key ] );
-						}
-					} else {
-						$mail->AddAddress( $to, $name );
+				if ( is_array( $to ) ) {
+					foreach ( $to as $key => $value ) {
+						$mail->AddAddress( $value, $name[ $key ] );
 					}
+				} else {
+					$mail->AddAddress( $to, $name );
+				}
 
 					$status = $mail->Send();
 					return $status;
 
-			} catch( Exception $e ) {
+			} catch ( Exception $e ) {
 			}
 
 			return false;
