@@ -3,7 +3,7 @@
  * Plugin Name: Donation
  * Plugin URI: #
  * Description: Donation
- * Version: 1.0.0
+ * Version: 1.0.2
  * Author: Weblizar
  * Author URI: https://weblizar.com
  * Text Domain: donation
