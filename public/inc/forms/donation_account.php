@@ -67,9 +67,6 @@ if (is_user_logged_in()) {
 // var_dump($order_data[0]->order_id); die;
 ?>
 
-<?php if( $order_id ):  ?>
-	
-<?php endif; ?>
 
 	<div class="container">
 		<div class="row">
@@ -141,7 +138,7 @@ if (is_user_logged_in()) {
 												<!-- <th>Payment Method</th> -->
 												<!-- <th>Payment Type</th> -->
 												<th>Date</th>
-												<th>Print</th>
+												<!-- <th>Print</th> -->
 											</tr>
 										</thead>
 										<tbody>
@@ -154,7 +151,7 @@ if (is_user_logged_in()) {
 													// echo '<td>' . esc_html($order->payment_method) . '</td>';
 													// echo '<td>' . esc_html(ucfirst($order->type)) . '</td>';
 													echo '<td>' . esc_html(DNM_Config::date_format_text($order->created_at)) . '</td>';
-													echo '<td><a href="' . esc_url(get_permalink() . 'id=' . $order->ID) . '" class="btn btn-sm btn-primary">Print</a></td>';
+													// echo '<td><a href="' . esc_url(get_permalink() . 'id=' . $order->ID) . '" class="btn btn-sm btn-primary">Print</a></td>';
 													echo '</tr>';
 												}
 											} else {
