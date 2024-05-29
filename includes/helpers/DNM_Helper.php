@@ -434,8 +434,17 @@ class DNM_Helper {
 		// Initialize cURL
 		$ch = curl_init();
 
+		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
+		$mode               = $phone_pay_settings['phone_pay_mode'];
+
+		if ( $mode == 'DEV' ) {
+			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/";
+		} else {
+			$url = "https://api.phonepe.com/apis/hermes/";
+		}
+
 		// Set the options
-		curl_setopt( $ch, CURLOPT_URL, 'https://api-preprod.phonepe.com/apis/pg-sandbox/v3/recurring/subscription/create' );
+		curl_setopt( $ch, CURLOPT_URL, "$url/apis/pg-sandbox/v3/recurring/subscription/create" );
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $request ) );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -504,8 +513,17 @@ class DNM_Helper {
 		// Initialize cURL
 		$ch = curl_init();
 
+		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
+		$mode               = $phone_pay_settings['phone_pay_mode'];
+
+		if ( $mode == 'DEV' ) {
+			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/";
+		} else {
+			$url = "https://api.phonepe.com/apis/hermes/";
+		}
+
 		// Set the options
-		curl_setopt( $ch, CURLOPT_URL, 'https://api-preprod.phonepe.com/apis/pg-sandbox/v3/recurring/auth/init' );
+		curl_setopt( $ch, CURLOPT_URL, "$url/v3/recurring/auth/init" );
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $request ) );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -522,6 +540,58 @@ class DNM_Helper {
 
 		// Return the response
 		return $responseData;
+	}
+
+	public static function check_auth_request_status($merchantId, $authRequestId, $saltKey, $saltIndex) {
+		// Prepare the URL
+
+
+		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
+		$mode               = $phone_pay_settings['phone_pay_mode'];
+
+		if ( $mode == 'DEV' ) {
+			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/";
+		} else {
+			$url = "https://api.phonepe.com/apis/hermes/";
+		}
+
+		$url = "$url/v3/recurring/auth/status/{$merchantId}/{$authRequestId}";
+
+		// Prepare the headers
+		$headers = array(
+			'Content-Type: application/json',
+			'X-VERIFY: ' . hash('sha256', "/v3/recurring/auth/status/{$merchantId}/{$authRequestId}" . $saltKey) . "###" . $saltIndex
+		);
+
+		// Initialize cURL
+		$ch = curl_init();
+
+		// Set the options
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		// Execute the request
+		$response = curl_exec($ch);
+
+		// Close cURL
+		curl_close($ch);
+
+		// Decode the response
+		$responseData = json_decode($response, true);
+
+		// Check the response
+		if ($responseData['success'] === true) {
+			return array(
+				'state'          => $responseData['data']['subscriptionDetails']['state'],
+				'subscriptionId' => $responseData['data']['subscriptionDetails']['subscriptionId'],
+			);
+		} else {
+			return array(
+				'state'   => 'failed',
+				'message' => $responseData['message'],
+			);
+		}
 	}
 
 	public static function send_email( $to, $subject, $body, $name = '', $email_for = '', $placeholders = array(), $attachments = null ) {

@@ -1,19 +1,19 @@
 <?php
-defined( 'ABSPATH' ) || die();
+defined('ABSPATH') || die();
 
 require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/DNM_Database.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Helper.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 
-if ( is_user_logged_in() ) {
+if (is_user_logged_in()) {
 	$current_user = wp_get_current_user();
 	$user_id      = $current_user->ID;
 
 
-	$customer_data = DNM_Database::getRecords( DNM_CUSTOMERS, 'user_id', $user_id );
+	$customer_data = DNM_Database::getRecords(DNM_CUSTOMERS, 'user_id', $user_id);
 
 	// Check if customer data exists
-	if ( $customer_data ) {
+	if ($customer_data) {
 		// Extract customer details from the first record
 		$customer_id      = $customer_data[0]->ID;
 		$customer_name    = $customer_data[0]->name;
@@ -22,6 +22,7 @@ if ( is_user_logged_in() ) {
 		$customer_city    = $customer_data[0]->city;
 		$customer_state   = $customer_data[0]->state;
 		$customer_address = $customer_data[0]->address;
+		$subscription_status = $customer_data[0]->Subscription_status;
 
 		// Generate a reference ID for the customer
 		$customer_reference_id = 'MP' . $customer_id;
@@ -35,39 +36,96 @@ if ( is_user_logged_in() ) {
 	}
 
 	// get order data
-	$order_data = DNM_Database::getRecords( DNM_ORDERS, 'customer_id', $customer_id );
+	$order_data = DNM_Database::getRecords(DNM_ORDERS, 'customer_id', $customer_id);
 
+	// get invoice data
 
-	?>
+	$invoice_data = array(
+		'order_id'       => 0,
+		'name'           => '',
+		'email'          => '',
+		'phone'          => '',
+		'address'        => '',
+		'amount'         => '',
+		'payment_method' => '',
+	);
+	if (isset($_GET['id'])) {
+		$order_id = absint($_GET['id']);
+		if (0 !== $order_id) {
+			$order = DNM_Order::get_order($order_id);
+			if (!$order) {
+				wp_safe_redirect($page_url);
+				exit;
+			}
+			foreach ($invoice_data as $key => $value) {
+				$invoice_data[$key] = sanitize_text_field($order->$key);
+			}
+		}
+	}
+	$logo = DNM_Helper::get_logo();
+
+// var_dump($order_data[0]->order_id); die;
+?>
+
+<?php if( $order_id ):  ?>
+	
+<?php endif; ?>
+
 	<div class="container">
 		<div class="row">
+			<div class="card">
+				<div class="card-body">
+					<div class="pb-2">
+						<h4 class="card-title mb-3">Subscription Status : 
+							<?php 
+								if ($subscription_status == 'active') {
+									echo '<span class="badge bg-success">' . ucfirst($subscription_status) . '</span>';
+								} else if ($subscription_status == 'inactive') {
+									echo '<span class="badge bg-warning">' . ucfirst($subscription_status) . '</span>';
+								} else {
+									echo '<span class="badge bg-secondary">' . ucfirst($subscription_status) . '</span>';
+								}
+							?>
+						
+						</h4>
+
+						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->order_id; ?>" id="subscription-activate-btn">Activate</button>
+						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->order_id; ?>" id="subscription-verify-btn">Verify</button>
+
+					</div>
+				</div>
+			</div>
+
+
 			<div class="col-xl-8">
 				<div class="card">
 					<div class="card-body pb-0">
 						<div class="row align-items-center">
-							<ul class="nav nav-tabs nav-tabs-custom border-bottom-0 nav-justified" role="tablist">
+							<ul class="nav nav-tabs nav-tabs-custom border-bottom-0 nav-justified flex-sm-column flex-md-row" role="tablist">
 								<li class="nav-item" role="presentation">
 									<a class="nav-link px-4 active" data-bs-toggle="tab" href="#payment-history" role="tab" aria-selected="true">
-										<span class="d-block d-sm-none"><i class="mdi mdi-menu-open"></i></span>
-										<span class="d-none d-sm-block">Payment History</span>
+										<span class="d-block"><i class="mdi mdi-menu-open"></i></span>
+										<span>Payment History</span>
 									</a>
 								</li>
 								<li class="nav-item" role="presentation">
 									<a class="nav-link px-4" data-bs-toggle="tab" href="#referenced-users" role="tab" aria-selected="false">
-										<span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-										<span class="d-none d-sm-block">Referenced Users</span>
+										<span class="d-block"><i class="fas fa-home"></i></span>
+										<span>Referenced Users</span>
 									</a>
 								</li>
 								<!-- <li class="nav-item" role="presentation">
 									<a class="nav-link px-4" data-bs-toggle="tab" href="#team" role="tab" aria-selected="false">
-										<span class="d-block d-sm-none"><i class="mdi mdi-account-group-outline"></i></span>
-										<span class="d-none d-sm-block">Team</span>
+										<span class="d-block"><i class="mdi mdi-account-group-outline"></i></span>
+										<span>Team</span>
 									</a>
 								</li> -->
 							</ul>
 						</div>
 					</div>
 				</div>
+
+
 
 				<div class="card">
 					<div class="tab-content p-4">
@@ -83,18 +141,20 @@ if ( is_user_logged_in() ) {
 												<!-- <th>Payment Method</th> -->
 												<!-- <th>Payment Type</th> -->
 												<th>Date</th>
+												<th>Print</th>
 											</tr>
 										</thead>
 										<tbody>
 											<?php
-											if ( ! empty( $order_data ) ) {
-												foreach ( $order_data as $order ) {
+											if (!empty($order_data)) {
+												foreach ($order_data as $order) {
 													echo '<tr>';
-													echo '<td>' . esc_html( $order->transaction_id ) . '</td>';
-													echo '<td>' . esc_html( $order->amount ) . '</td>';
+													echo '<td>' . esc_html($order->transaction_id) . '</td>';
+													echo '<td>' . esc_html($order->amount) . '</td>';
 													// echo '<td>' . esc_html($order->payment_method) . '</td>';
 													// echo '<td>' . esc_html(ucfirst($order->type)) . '</td>';
-													echo '<td>' . esc_html( DNM_Config::date_format_text( $order->created_at ) ) . '</td>';
+													echo '<td>' . esc_html(DNM_Config::date_format_text($order->created_at)) . '</td>';
+													echo '<td><a href="' . esc_url(get_permalink() . 'id=' . $order->ID) . '" class="btn btn-sm btn-primary">Print</a></td>';
 													echo '</tr>';
 												}
 											} else {
@@ -126,21 +186,21 @@ if ( is_user_logged_in() ) {
 										<tbody>
 											<?php
 											$total_commision  = 0;
-											$referenced_users = DNM_Database::getReferencedCustomers( $customer_reference_id );
+											$referenced_users = DNM_Database::getReferencedCustomers($customer_reference_id);
 											$commission_percentage = DNM_Helper::get_referenced_discount();
-											if ( ! empty( $referenced_users ) ) {
-												foreach ( $referenced_users as $user ) {
+											if (!empty($referenced_users)) {
+												foreach ($referenced_users as $user) {
 													echo '<tr>';
-													echo '<td>' . esc_html( $user->name ) . '</td>';
-													echo '<td>' . esc_html( $user->email ) . '</td>';
-													echo '<td>' . esc_html( $user->phone ) . '</td>';
-													echo '<td>' . esc_html( $user->orders[0]->amount ) . '</td>';
-													echo '<td>' . esc_html( $user->reference_id ) . '</td>';
+													echo '<td>' . esc_html($user->name) . '</td>';
+													echo '<td>' . esc_html($user->email) . '</td>';
+													echo '<td>' . esc_html($user->phone) . '</td>';
+													echo '<td>' . esc_html($user->orders[0]->amount) . '</td>';
+													echo '<td>' . esc_html($user->reference_id) . '</td>';
 													echo '</tr>';
 
 
 
-													$commission       = $user->orders[0]->amount * ( $commission_percentage / 100 );
+													$commission       = $user->orders[0]->amount * ($commission_percentage / 100);
 													$total_commision += $commission;
 												}
 											} else {
@@ -169,7 +229,7 @@ if ( is_user_logged_in() ) {
 				<div class="card">
 					<div class="card-body">
 						<div class="pb-2">
-							<h4 class="card-title mb-3">Reference Balance : <?php echo DNM_Config::get_amount_text( $total_commision ); ?></h4>
+							<h4 class="card-title mb-3">Reference Balance : <?php echo DNM_Config::get_amount_text($total_commision); ?></h4>
 
 							<ul class="ps-3 mb-0">
 								<li>Reference Percentage : <?php echo $commission_percentage; ?>%</li>
@@ -235,35 +295,35 @@ if ( is_user_logged_in() ) {
 			</div>
 		</div>
 	</div>
-	<?php
+<?php
 } else {
 	$args = array(
 		'echo'           => true,
 		'remember'       => true,
-		'redirect'       => ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+		'redirect'       => (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
 		'form_id'        => 'loginform',
 		'id_username'    => 'user_login',
 		'id_password'    => 'user_pass',
 		'id_remember'    => 'rememberme',
 		'id_submit'      => 'wp-submit',
-		'label_username' => __( 'Username' ),
-		'label_password' => __( 'Password' ),
-		'label_remember' => __( 'Remember Me' ),
-		'label_log_in'   => __( 'Log In' ),
+		'label_username' => __('Username'),
+		'label_password' => __('Password'),
+		'label_remember' => __('Remember Me'),
+		'label_log_in'   => __('Log In'),
 		'value_username' => '',
 		'value_remember' => false,
 	);
-	?>
+?>
 	<div class="container mt-5">
 		<div class="card">
 			<div class="card-header">
-				<h2><?php echo __( 'Login', 'donation' ); ?></h2>
+				<h2><?php echo __('Login', 'donation'); ?></h2>
 			</div>
 			<div class="card-body">
-				<?php wp_login_form( $args ); ?>
+				<?php wp_login_form($args); ?>
 			</div>
 		</div>
 	</div>
-	<?php
+<?php
 }
 ?>

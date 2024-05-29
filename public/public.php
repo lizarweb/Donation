@@ -24,3 +24,10 @@ add_action( 'wp_ajax_nopriv_dnm_save_fixed_registration_form', array( 'DNM_Regis
 
 add_action( 'wp_ajax_dnm_save_membership_registration_form', array( 'DNM_Registration', 'save_membership_registration_form' ) );
 add_action( 'wp_ajax_nopriv_dnm_save_membership_registration_form', array( 'DNM_Registration', 'save_membership_registration_form' ) );
+
+
+add_action( 'wp_ajax_nopriv_dnm_subscription_form', array( 'DNM_Registration', 'activate_subscription' ) );
+add_action( 'wp_ajax_dnm_subscription_form', array( 'DNM_Registration', 'activate_subscription' ) );
+
+add_action( 'wp_ajax_nopriv_dnm_verify_form', array( 'DNM_Registration', 'verify_subscription' ) );
+add_action( 'wp_ajax_dnm_verify_form', array( 'DNM_Registration', 'verify_subscription' ) );

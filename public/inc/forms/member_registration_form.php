@@ -48,6 +48,11 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 					<input type="text" class="dnm-form-control" id="reference_id" name="reference_id" placeholder="<?php echo __( 'Enter Refrence ID (Optional) Here', 'donation' ); ?>">
 				</div>
 
+				<!-- <div class="dnm-mb-3">
+					<label for="reference_id" class="dnm-form-label"><?php echo __( 'AuthRequestId (Required)', 'donation' ); ?></label><span class="text-danger">*</span></label>
+					<input type="text" class="dnm-form-control" id="reference_id" name="reference_id" placeholder="<?php echo __( 'Enter Refrence ID (Optional) Here', 'donation' ); ?>">
+				</div> -->
+
 				<div class="dnm-mb-3">
 					<label for="amount" class="dnm-form-label"><?php echo __( 'Amount', 'donation' ); ?></label>
 					<div class="dnm-form-check">

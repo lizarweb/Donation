@@ -135,7 +135,7 @@ class DNM_Order {
 		$offset = $start;
 		$limit  = $limit;
 
-		$query = 'SELECT o.ID, o.order_id, o.transaction_id, o.type, o.payment_method, c.ID as reference , c.reference_id as referenced_by, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at FROM ' . DNM_ORDERS . ' as o
+		$query = 'SELECT o.ID, o.order_id, o.transaction_id, o.type, o.payment_method, c.ID as reference , c.reference_id as referenced_by, c.name, c.email, c.phone, o.amount, o.created_at, o.updated_at, c.subscription_status FROM ' . DNM_ORDERS . ' as o
             INNER JOIN ' . DNM_CUSTOMERS . ' as c
             ON o.customer_id = c.ID WHERE o.type = "membership"';
 
@@ -146,7 +146,7 @@ class DNM_Order {
 		$total_query   = $query;
 		$total_data    = $wpdb->get_results( $total_query );
 		$total_records = count( $total_data );
-		$query        .= " ORDER BY o.id {$dir} LIMIT {$offset}, {$limit}";
+		$query .= " ORDER BY o.id DESC LIMIT {$offset}, {$limit}";
 		$data          = $wpdb->get_results( $query );
 		$orders        = array();
 
@@ -159,11 +159,12 @@ class DNM_Order {
 					$order->phone,
 					'<strong>' . DNM_Config::get_amount_text( $order->amount ) . '</strong>',
 					DNM_Config::date_format_text( $order->created_at ),
-					$order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
-					$order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
+					// $order->created_at ? DNM_Config::date_format_text( $order->updated_at ) : '<span class="badge bg-danger">N/A</span>',
+					// $order->payment_method ? '<span class="badge bg-info">' . $order->payment_method . '</span>' : '<span class="badge bg-secondary">N/A</span>',
 					$order->transaction_id ? $order->transaction_id : '-',
 					'MP' . $order->reference ? 'MP' . $order->reference : '-',
 					$order->referenced_by ? $order->referenced_by : '-',
+					$order->subscription_status == 'active' ? '<span class="badge bg-success">' . ucfirst($order->subscription_status) . '</span>' : ($order->subscription_status == 'inactive' ? '<span class="badge bg-danger">' . ucfirst($order->subscription_status) . '</span>' : '<span class="badge bg-secondary">N/A</span>'),
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=reference&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people-fill"></i></a>
