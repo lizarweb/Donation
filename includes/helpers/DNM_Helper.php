@@ -438,13 +438,13 @@ class DNM_Helper {
 		$mode               = $phone_pay_settings['phone_pay_mode'];
 
 		if ( $mode == 'DEV' ) {
-			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/";
+			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox";
 		} else {
-			$url = "https://api.phonepe.com/apis/hermes/";
+			$url = "https://api.phonepe.com/apis/hermes";
 		}
 
 		// Set the options
-		curl_setopt( $ch, CURLOPT_URL, "$url/apis/pg-sandbox/v3/recurring/subscription/create" );
+		curl_setopt( $ch, CURLOPT_URL, "$url/v3/recurring/subscription/create" );
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $request ) );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -465,7 +465,7 @@ class DNM_Helper {
 
 		// Decode the response
 		$responseData = json_decode( $response, true );
-
+		var_dump($responseData); die;
 		// Check the response
 		if ( $responseData['success'] === true ) {
 			return array(
@@ -517,9 +517,9 @@ class DNM_Helper {
 		$mode               = $phone_pay_settings['phone_pay_mode'];
 
 		if ( $mode == 'DEV' ) {
-			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/";
+			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox";
 		} else {
-			$url = "https://api.phonepe.com/apis/hermes/";
+			$url = "https://api.phonepe.com/apis/hermes";
 		}
 
 		// Set the options
@@ -550,9 +550,9 @@ class DNM_Helper {
 		$mode               = $phone_pay_settings['phone_pay_mode'];
 
 		if ( $mode == 'DEV' ) {
-			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox/";
+			$url = "https://api-preprod.phonepe.com/apis/pg-sandbox";
 		} else {
-			$url = "https://api.phonepe.com/apis/hermes/";
+			$url = "https://api.phonepe.com/apis/hermes";
 		}
 
 		$url = "$url/v3/recurring/auth/status/{$merchantId}/{$authRequestId}";

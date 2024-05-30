@@ -481,7 +481,7 @@ class DNM_Registration {
 		$phone           = $customer->phone;
 
 		// create phonepe user subscription here.
-		$subscription = DNM_Helper::create_phonepe_user_subscription( $subscriptionId, $phone, $amount_in_paisa, $frequency = 'MONTHLY', $recurringCount = 12 );
+		$subscription = DNM_Helper::create_phonepe_user_subscription( $subscriptionId, $phone, $amount_in_paisa, 'MONTHLY', 12 );
 
 		if ( $subscription['state'] === 'CREATED' ) {
 			// pay using subscription
