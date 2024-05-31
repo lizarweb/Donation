@@ -36,9 +36,9 @@
                             $(`#${field}`).before(`<div style="color: red;" class="alert alert-danger">${response.data[field]}</div>`);
                         }
                     }
-                    //  else {
-                    //     window.location.href = response;
-                    // }
+                     else {
+                        window.location.href = response;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.error(`Request failed: ${textStatus}`);
