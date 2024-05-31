@@ -419,8 +419,6 @@ class DNM_Helper {
 		// Convert the JSON payload to Base64
 		$base64Payload = base64_encode( json_encode( $data ) );
 
-		var_dump($base64Payload); 
-
 		// Your request
 		$request = array(
 			'request' => $base64Payload,
@@ -432,10 +430,6 @@ class DNM_Helper {
 
 		// Calculate X-Verify
 		$xVerify = hash( 'sha256', $base64Payload . '/v3/recurring/subscription/create' . $saltKey ) . '###' . $saltIndex;
-
-		var_dump($xVerify); 
-
-		die;
 		
 		// Initialize cURL
 		$ch = curl_init();
