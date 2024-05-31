@@ -12,7 +12,6 @@ class DNM_Database {
 		$wpdb->query( 'ALTER TABLE ' . DNM_USERS . ' ENGINE = InnoDB' );
 		$wpdb->query( 'ALTER TABLE ' . DNM_POSTS . ' ENGINE = InnoDB' );
 
-		// Create Customer table.
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . DNM_CUSTOMERS . ' (
 		ID bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		reference_id varchar(255) DEFAULT NULL,
@@ -22,7 +21,7 @@ class DNM_Database {
 		phone varchar(191) DEFAULT NULL,
 		city varchar(191) DEFAULT NULL,
 		state varchar(191) DEFAULT NULL,
-		Subscription_status varchar(191) DEFAULT inactive,
+		Subscription_status varchar(191) DEFAULT "inactive",
 		sub_id varchar(191) DEFAULT NULL,
 		auth_id varchar(191) DEFAULT NULL,
 		address text DEFAULT NULL,

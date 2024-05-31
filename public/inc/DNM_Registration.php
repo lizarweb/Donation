@@ -493,10 +493,7 @@ class DNM_Registration {
 				$phone_pay_settings['phone_pay_salt_key'],
 				$phone_pay_settings['phone_pay_salt_index'],
 				$phone_pay_settings['phone_pay_redirect_url'],
-				'WEB
-			',
 				'UPI_QR',
-				'com.phonepe.app'
 			);
 
 			$code        = $responseData['code'];
