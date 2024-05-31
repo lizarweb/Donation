@@ -63,8 +63,6 @@ if (is_user_logged_in()) {
 		}
 	}
 	$logo = DNM_Helper::get_logo();
-
-// var_dump($order_data[0]->order_id); die;
 ?>
 
 

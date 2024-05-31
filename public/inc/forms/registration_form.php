@@ -2,7 +2,6 @@
 defined( 'ABSPATH' ) || die();
 
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
-// var_dump($_GET, $_POST, $_REQUEST); die;
 ?>
 
 <div class="dnm-container">
