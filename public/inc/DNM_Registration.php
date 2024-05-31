@@ -484,7 +484,8 @@ class DNM_Registration {
 		$subscription = DNM_Helper::create_phonepe_user_subscription( $subscriptionId, $phone, $amount_in_paisa, 'MONTHLY', 12 );
 
 		if ( $subscription['state'] === 'CREATED' ) {
-			// pay using subscription
+
+			// Pay using subscription.
 			$responseData = DNM_Helper::pay_using_phonepe_user_subscription(
 				$phone_pay_settings['phone_pay_merchant_id'],
 				$phone_pay_settings['phone_pay_merchant_user_id'],
@@ -505,8 +506,7 @@ class DNM_Registration {
 					'redirectUrl' => $redirectUrl,
 				);
 
-				// update order status
-
+				// Update order status.
 				$customer_data = array(
 					'auth_id' => $authRequestId,
 					'sub_id'  => $subscriptionId,
@@ -514,9 +514,7 @@ class DNM_Registration {
 
 				$updated = DNM_Database::updateTable( DNM_CUSTOMERS, $customer_data, array( 'ID' => $customer_id ) );
 
-				echo wp_json_encode( $response );
-
-				exit;
+				echo wp_json_encode( $response ); exit;
 			}
 
 			wp_send_json_error( array( 'message' => 'Failed to activate subscription' ) );
