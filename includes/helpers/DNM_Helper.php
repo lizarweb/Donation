@@ -479,7 +479,7 @@ class DNM_Helper {
 		}
 	}
 
-	public static function pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $deviceOS = 'ANDROID', $paymentType = 'UPI_QR', $targetApp = 'com.phonepe.app' ) {
+	public static function pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $paymentType = 'UPI_QR' ) {
 		// Your JSON payload
 		$data = array(
 			'merchantId'        => $merchantId,
