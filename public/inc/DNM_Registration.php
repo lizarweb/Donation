@@ -483,13 +483,15 @@ class DNM_Registration {
 		// create phonepe user subscription here.
 		$subscription = DNM_Helper::create_phonepe_user_subscription( $subscriptionId, $phone, $amount_in_paisa, 'MONTHLY', 12 );
 
-		if ( $subscription['state'] === 'CREATED' ) {
+		
 
+		if ( $subscription['state'] === 'CREATED' ) {
+			$sub_id = $subscription['subscriptionId'];
 			// Pay using subscription.
 			$responseData = DNM_Helper::pay_using_phonepe_user_subscription(
 				$phone_pay_settings['phone_pay_merchant_id'],
 				$phone_pay_settings['phone_pay_merchant_user_id'],
-				$subscriptionId,
+				$sub_id,
 				$authRequestId,
 				$phone_pay_settings['phone_pay_salt_key'],
 				$phone_pay_settings['phone_pay_salt_index'],
