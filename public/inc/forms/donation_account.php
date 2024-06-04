@@ -84,8 +84,8 @@ if (is_user_logged_in()) {
 						
 						</h4>
 
-						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->order_id; ?>" id="subscription-activate-btn">Activate</button>
-						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->order_id; ?>" id="subscription-verify-btn">Verify</button>
+						<butto class="btn btn-primary" data-order-id="<?php echo $order_data[0]->ID;; ?>" id="subscription-activate-btn">Activate</butto
+						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->ID; ?>" id="subscription-verify-btn">Verify</button>
 
 					</div>
 				</div>

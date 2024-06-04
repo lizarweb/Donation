@@ -461,8 +461,8 @@ class DNM_Registration {
 	}
 
 	public static function activate_subscription() {
-		$order_id = $_POST['order_id'];
-		$order    = DNM_Database::getRecord( DNM_ORDERS, 'order_id', $order_id );
+		$ID = $_POST['order_id'];
+		$order    = DNM_Database::getRecord( DNM_ORDERS, 'ID', $ID );
 		if ( ! $order ) {
 			wp_send_json_error( array( 'message' => 'Order not found' ) );
 		}
@@ -525,8 +525,8 @@ class DNM_Registration {
 	}
 
 	public static function verify_subscription() {
-		$order_id = $_POST['order_id'];
-		$order    = DNM_Database::getRecord( DNM_ORDERS, 'order_id', $order_id );
+		$ID = $_POST['order_id'];
+		$order    = DNM_Database::getRecord( DNM_ORDERS, 'ID', $ID );
 		if ( ! $order ) {
 			wp_send_json_error( array( 'message' => 'Order not found' ) );
 		}

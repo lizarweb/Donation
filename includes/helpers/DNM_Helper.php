@@ -580,7 +580,7 @@ class DNM_Helper {
 		$responseData = json_decode($response, true);
 
 		// Check the response
-		if ($responseData['success'] === true) {
+		if ($responseData['code'] == 'SUCCESS') {
 			return array(
 				'state'          => $responseData['data']['subscriptionDetails']['state'],
 				'subscriptionId' => $responseData['data']['subscriptionDetails']['subscriptionId'],
