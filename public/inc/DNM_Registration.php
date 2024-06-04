@@ -532,6 +532,7 @@ class DNM_Registration {
 		}
 
 		$customer_id = $order->customer_id;
+		
 		$customer    = DNM_Database::getRecord( DNM_CUSTOMERS, 'ID', $customer_id );
 		if ( ! $customer ) {
 			wp_send_json_error( array( 'message' => 'Customer not found' ) );
@@ -550,19 +551,14 @@ class DNM_Registration {
 
 		error_log( 'Auth Status: ' . print_r( $auth_status, true ) );
 
-		if ( $auth_status['state'] === 'ACTIVE' && $auth_status['subscriptionId'] == $subscriptionId ) {
-
+		if ( $auth_status['state'] == 'ACTIVE' ) {
 				// update customer subscription status
 				$customer_data = array(
 					'Subscription_status' => 'active',
 				);
-
 				$updated = DNM_Database::updateTable( DNM_CUSTOMERS, $customer_data, array( 'ID' => $customer_id ) );
-
 				wp_send_json_success( array( 'message' => 'Subscription activated successfully' ) );
-
-				
-
+			exit;
 		}
 	}
 }
