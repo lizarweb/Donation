@@ -144,5 +144,52 @@
         });
     });
 
+    function dnmPrint(targetId, title, styleSheets, css = '') {
+        var target = $(targetId).html();
+
+        var frame = $('<iframe />');
+        frame[0].name = 'frame';
+        frame.css({ 'position': 'absolute', 'top': '-1000000px' });
+
+        var that = frame.appendTo('body');
+        var frameDoc = frame[0].contentWindow ? frame[0].contentWindow : frame[0].contentDocument.document ? frame[0].contentDocument.document : frame[0].contentDocument;
+        frameDoc.document.open();
+
+        // Create a new HTML document.
+        frameDoc.document.write('<html><head>' + title);
+        frameDoc.document.write('</head><body>');
+
+        // Append the external CSS file.
+        styleSheets.forEach(function (styleSheet, index) {
+            $(that).contents().find('head').append('<link href="' + styleSheet + '" rel="stylesheet" type="text/css" referrerpolicy="origin" />');
+        });
+
+        if (css) {
+            frameDoc.document.write('<style>' + css + '</style>');
+        }
+
+        // Append the target.
+        frameDoc.document.write(target);
+        frameDoc.document.write('</body></html>');
+        frameDoc.document.close();
+
+        setTimeout(function () {
+            window.frames["frame"].focus();
+            window.frames["frame"].print();
+            frame.remove();
+        }, 1000);
+    }
+
+    $(document).on('click', '#dnm-print-invoice', function() {
+        var targetId = '#printableArea';
+        var title = $(this).data('title');
+        if(title) {
+            title = '<title>' + title  + '</title>';
+        }
+        var styleSheets = $(this).data('styles');
+
+        dnmPrint(targetId, title, styleSheets);
+    });
+
 
 })(jQuery);

@@ -57,21 +57,21 @@ require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
 					<label for="amount" class="dnm-form-label"><?php echo __( 'Amount', 'donation' ); ?></label>
 					<div class="dnm-form-check">
 						<input class="dnm-form-check-input" type="radio" id="amount_101" name="amount" value="101">
-						<label class="dnm-form-check-label" for="amount_101"><?php esc_attr_e( DNM_Config::get_amount_text( 101 ) ); ?></label>
+						<label class="dnm-form-check-label" for="amount_101"><?php esc_attr_e( DNM_Config::get_amount_text( 101 ) ); ?> plan Silver Membership</label>
 					</div>
 
 					<div class="dnm-form-check">
 						<input class="dnm-form-check-input" type="radio" id="amount_251" name="amount" value="251">
-						<label class="dnm-form-check-label" for="amount_251"><?php esc_attr_e( DNM_Config::get_amount_text( 251 ) ); ?></label>
+						<label class="dnm-form-check-label" for="amount_251"><?php esc_attr_e( DNM_Config::get_amount_text( 251 ) ); ?> plan Gold Membership</label>
 					</div>
 
 					<div class="dnm-form-check">
 						<input class="dnm-form-check-input" type="radio" id="amount_501" name="amount" value="501">
-						<label class="dnm-form-check-label" for="amount_501"><?php esc_attr_e( DNM_Config::get_amount_text( 501 ) ); ?></label>
+						<label class="dnm-form-check-label" for="amount_501"><?php esc_attr_e( DNM_Config::get_amount_text( 501 ) ); ?> plan Platinum Membership</label>
 					</div>
 					<div class="dnm-form-check">
 						<input class="dnm-form-check-input" type="radio" id="amount_11000" name="amount" value="1100" checked>
-						<label class="dnm-form-check-label" for="amount_11000"><?php esc_attr_e( DNM_Config::get_amount_text( 1100 ) ); ?></label>
+						<label class="dnm-form-check-label" for="amount_11000"><?php esc_attr_e( DNM_Config::get_amount_text( 1100 ) ); ?> plan Diamond Membership</label>
 					</div>
 				</div>
 

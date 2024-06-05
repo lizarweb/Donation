@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die();
 require_once DNM_PLUGIN_DIR_PATH . '/includes/helpers/DNM_Helper.php';
-
+require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/orders/DNM_Order.php';
 $page_url = esc_url( DNM_Helper::get_page_url( 'donation-orders' ) );
 
 $order_data = array(
@@ -28,13 +28,13 @@ if ( isset( $_GET['id'] ) ) {
 }
 $logo = DNM_Helper::get_logo();
 ?>
-<div class="container-fluid mt-2">
+<div class="container-fluid mt-2 ">
 	<div class="row d-flex justify-content-center">
 		<div class="col-md-8">
 			<button id="dnm-print-invoice" class="btn btn-dark" data-styles='["<?php echo esc_url( DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css' ); ?>"]' data-title="Print Receipt">Print Receipt</button>
-			<div class="card" id="printableArea" style="width: 100%!important;">
+			<div class="card mt-3 p-4" id="printableArea" style="width: 100%!important;">
 				<div class="row">
-					<div class="col-9">
+					<div class="col-9 ">
 						<div class="d-flex flex-column">
 							<h2 class="font-weight-bold">महाराणा प्रताप स्मृति अभियान</h2>
 							<span>रॉयल ग्रामीण विकास समिति</span>

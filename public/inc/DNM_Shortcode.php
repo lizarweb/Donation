@@ -43,7 +43,7 @@ class DNM_Shortcode {
 	public static function donation_account() {
 		self::enqueue_dnm_assets();
 		ob_start();
-		require_once DNM_PLUGIN_DIR_PATH . 'public/inc/forms/donation_account.php';
+		require_once DNM_PLUGIN_DIR_PATH . 'public/inc/account/route.php';
 		return ob_get_clean();
 	}
 

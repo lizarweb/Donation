@@ -4,6 +4,7 @@ defined('ABSPATH') || die();
 require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/DNM_Database.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Helper.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
+require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/manager/orders/DNM_Order.php';
 
 if (is_user_logged_in()) {
 	$current_user = wp_get_current_user();
@@ -60,6 +61,7 @@ if (is_user_logged_in()) {
 			foreach ($invoice_data as $key => $value) {
 				$invoice_data[$key] = sanitize_text_field($order->$key);
 			}
+			
 		}
 	}
 	$logo = DNM_Helper::get_logo();
@@ -109,18 +111,10 @@ if (is_user_logged_in()) {
 										<span>Referenced Users</span>
 									</a>
 								</li>
-								<!-- <li class="nav-item" role="presentation">
-									<a class="nav-link px-4" data-bs-toggle="tab" href="#team" role="tab" aria-selected="false">
-										<span class="d-block"><i class="mdi mdi-account-group-outline"></i></span>
-										<span>Team</span>
-									</a>
-								</li> -->
 							</ul>
 						</div>
 					</div>
 				</div>
-
-
 
 				<div class="card">
 					<div class="tab-content p-4">
@@ -133,10 +127,8 @@ if (is_user_logged_in()) {
 											<tr>
 												<th>Transaction ID</th>
 												<th>Amount</th>
-												<!-- <th>Payment Method</th> -->
-												<!-- <th>Payment Type</th> -->
 												<th>Date</th>
-												<!-- <th>Print</th> -->
+												<th>Print</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -146,10 +138,8 @@ if (is_user_logged_in()) {
 													echo '<tr>';
 													echo '<td>' . esc_html($order->transaction_id) . '</td>';
 													echo '<td>' . esc_html($order->amount) . '</td>';
-													// echo '<td>' . esc_html($order->payment_method) . '</td>';
-													// echo '<td>' . esc_html(ucfirst($order->type)) . '</td>';
 													echo '<td>' . esc_html(DNM_Config::date_format_text($order->created_at)) . '</td>';
-													// echo '<td><a href="' . esc_url(get_permalink() . 'id=' . $order->ID) . '" class="btn btn-sm btn-primary">Print</a></td>';
+													echo '<td><a href="' . esc_url(get_permalink() . '?action=view&id=' . $order->ID) . '" class="btn btn-sm btn-primary">View</a></td>';
 													echo '</tr>';
 												}
 											} else {
@@ -172,9 +162,6 @@ if (is_user_logged_in()) {
 												<th>Email</th>
 												<th>Phone</th>
 												<th>Amount</th>
-												<!-- <th>District</th> -->
-												<!-- <th>State</th> -->
-												<!-- <th>Address</th> -->
 												<th>Referenced BY</th>
 											</tr>
 										</thead>
@@ -192,9 +179,6 @@ if (is_user_logged_in()) {
 													echo '<td>' . esc_html($user->orders[0]->amount) . '</td>';
 													echo '<td>' . esc_html($user->reference_id) . '</td>';
 													echo '</tr>';
-
-
-
 													$commission       = $user->orders[0]->amount * ($commission_percentage / 100);
 													$total_commision += $commission;
 												}
@@ -218,6 +202,7 @@ if (is_user_logged_in()) {
 						</div>
 					</div>
 				</div>
+
 			</div>
 
 			<div class="col-xl-4">
@@ -231,18 +216,7 @@ if (is_user_logged_in()) {
 							</ul>
 
 						</div>
-						<!-- <hr> -->
-						<!-- <div class="pt-2">
-							<h4 class="card-title mb-4">My Skill</h4>
-							<div class="d-flex gap-2 flex-wrap">
-								<span class="badge badge-soft-secondary p-2">HTML</span>
-								<span class="badge badge-soft-secondary p-2">Bootstrap</span>
-								<span class="badge badge-soft-secondary p-2">Scss</span>
-								<span class="badge badge-soft-secondary p-2">Javascript</span>
-								<span class="badge badge-soft-secondary p-2">React</span>
-								<span class="badge badge-soft-secondary p-2">Angular</span>
-							</div>
-						</div> -->
+						
 					</div>
 				</div>
 
