@@ -60,8 +60,14 @@ class DNM_Registration {
 			'user'          => $donation_data,
 			'transactionID' => $transactionID,
 		);
-		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 30 * MINUTE_IN_SECONDS );
+		
+		// Start the session if it's not already started
+		if (!session_id()) {
+			session_start();
+		}
+		
+		// Save the user data in the session
+		$_SESSION['user_data'] = $user_data;
 
 		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
 		// You can also define the redirect and callback URL on per transaction basis
@@ -138,8 +144,14 @@ class DNM_Registration {
 			'user'          => $donation_data,
 			'transactionID' => $transactionID,
 		);
-		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 30 * MINUTE_IN_SECONDS );
+		
+		// Start the session if it's not already started
+		if (!session_id()) {
+			session_start();
+		}
+		
+		// Save the user data in the session
+		$_SESSION['user_data'] = $user_data;
 
 		$redirectURL = $phonepe->standardCheckout()->createTransaction( $amountInPaisa, $userMobile, $transactionID )->getTransactionURL();
 		echo $redirectURL;
@@ -317,8 +329,14 @@ class DNM_Registration {
 			'user'          => $donation_data,
 			'transactionID' => $transactionID,
 		);
-		// Save the transaction ID in transient for 5 min.
-		set_transient( 'user_data', $user_data, 30 * MINUTE_IN_SECONDS );
+		
+		// Start the session if it's not already started
+		if (!session_id()) {
+			session_start();
+		}
+		
+		// Save the user data in the session
+		$_SESSION['user_data'] = $user_data;
 
 		$subscriptionId = 'SUBS' . date( 'ymdHis' );
 		$authRequestId  = 'AUTH' . date( 'ymdHis' );

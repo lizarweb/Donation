@@ -31,3 +31,11 @@ add_action( 'wp_ajax_dnm_subscription_form', array( 'DNM_Registration', 'activat
 
 add_action( 'wp_ajax_nopriv_dnm_verify_form', array( 'DNM_Registration', 'verify_subscription' ) );
 add_action( 'wp_ajax_dnm_verify_form', array( 'DNM_Registration', 'verify_subscription' ) );
+
+function start_session() {
+    if(!session_id()) {
+        session_start();
+    }
+}
+
+add_action('init', 'start_session', 1);
