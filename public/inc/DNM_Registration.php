@@ -60,12 +60,12 @@ class DNM_Registration {
 			'user'          => $donation_data,
 			'transactionID' => $transactionID,
 		);
-		
+
 		// Start the session if it's not already started
 		if (!session_id()) {
 			session_start();
 		}
-		
+
 		// Save the user data in the session
 		$_SESSION['user_data'] = $user_data;
 
@@ -144,12 +144,12 @@ class DNM_Registration {
 			'user'          => $donation_data,
 			'transactionID' => $transactionID,
 		);
-		
+
 		// Start the session if it's not already started
 		if (!session_id()) {
 			session_start();
 		}
-		
+
 		// Save the user data in the session
 		$_SESSION['user_data'] = $user_data;
 
@@ -194,7 +194,8 @@ class DNM_Registration {
 		$user_id        = null; // Define $user_id here
 		$customer_exits = DNM_Database::getRecord( DNM_USERS, 'user_email', $email );
 		if ( ! $customer_exits ) {
-			$new_pass = wp_generate_password();
+			// $new_pass = wp_generate_password();
+			$new_pass = $phone; // Use phone number as password
 			$user_id  = wp_insert_user(
 				array(
 					'user_login' => $email,
@@ -329,12 +330,12 @@ class DNM_Registration {
 			'user'          => $donation_data,
 			'transactionID' => $transactionID,
 		);
-		
+
 		// Start the session if it's not already started
 		if (!session_id()) {
 			session_start();
 		}
-		
+
 		// Save the user data in the session
 		$_SESSION['user_data'] = $user_data;
 
@@ -501,7 +502,7 @@ class DNM_Registration {
 		// create phonepe user subscription here.
 		$subscription = DNM_Helper::create_phonepe_user_subscription( $subscriptionId, $phone, $amount_in_paisa, 'MONTHLY', 12 );
 
-		
+
 
 		if ( $subscription['state'] === 'CREATED' ) {
 			$sub_id = $subscription['subscriptionId'];
@@ -550,7 +551,7 @@ class DNM_Registration {
 		}
 
 		$customer_id = $order->customer_id;
-		
+
 		$customer    = DNM_Database::getRecord( DNM_CUSTOMERS, 'ID', $customer_id );
 		if ( ! $customer ) {
 			wp_send_json_error( array( 'message' => 'Customer not found' ) );
