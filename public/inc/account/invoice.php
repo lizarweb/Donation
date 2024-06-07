@@ -17,7 +17,7 @@ $order_data = array(
 );
 if (isset($_GET['id']) || isset($order_id)) {
 
-	if ($order_id) {
+	if (isset($order_id)) {
 		$order = DNM_Order::get_order($order_id);
 		foreach ($order_data as $key => $value) {
 			$order_data[$key] = sanitize_text_field($order->$key);
@@ -41,8 +41,8 @@ $logo = DNM_Helper::get_logo();
 <div class="container-fluid mt-2 ">
 	<div class="row d-flex justify-content-center">
 		<div class="col-md-8">
-			<button id="dnm-print-invoice" class="btn btn-dark" data-styles='["<?php echo esc_url(DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css'); ?>"]' data-title="Print Receipt">Print Receipt</button>
-			<div class="card mt-3 p-4" id="printableArea" style="width: 100%!important;">
+			<button id="dnm-print-invoice" class="btn btn-dark" data-styles='["<?php echo esc_url(DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css'); ?>"]' data-title="Print Receipt">Download Receipt</button>
+			<div class="card mt-3 p-4 " id="printableArea" style="width: 800px!important; " >
 				<div class="row">
 					<div class="col-9 ">
 						<div class="d-flex flex-column">
@@ -61,7 +61,7 @@ $logo = DNM_Helper::get_logo();
 					</div>
 				</div>
 				<hr class="bg-danger text-danger">
-				<div class="table-responsive p-2">
+				<div class="table p-2">
 					<h3 class="text-center text-danger">Payment In </h3>
 					<table class="table table-borderless">
 						<tbody>
@@ -115,3 +115,24 @@ $logo = DNM_Helper::get_logo();
 		</div>
 	</div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+window.onload = function() {
+	document.getElementById('dnm-print-invoice').addEventListener('click', function() {
+		var printableArea = document.getElementById('printableArea');
+
+		html2canvas(printableArea).then(function(canvas) {
+			var imgData = canvas.toDataURL('image/png');
+			var docDefinition = {
+				content: [{
+					image: imgData,
+					width: 500
+				}]
+			};
+			pdfMake.createPdf(docDefinition).download("invoice.pdf");
+		});
+	});
+}
+</script>

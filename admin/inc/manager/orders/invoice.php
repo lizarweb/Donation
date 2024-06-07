@@ -107,3 +107,25 @@ $logo = DNM_Helper::get_logo();
 		</div>
 	</div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+window.onload = function() {
+	document.getElementById('dnm-print-invoice').addEventListener('click', function() {
+		var printableArea = document.getElementById('printableArea');
+
+		html2canvas(printableArea).then(function(canvas) {
+			var imgData = canvas.toDataURL('image/png');
+			var docDefinition = {
+				content: [{
+					image: imgData,
+					width: 500
+				}]
+			};
+			pdfMake.createPdf(docDefinition).download("invoice.pdf");
+		});
+	});
+}
+</script>
+
