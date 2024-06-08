@@ -405,7 +405,7 @@ class DNM_Helper {
 			'merchantId'             => $phone_pay_settings['phone_pay_merchant_id'],
 			'merchantSubscriptionId' => $subscriptionId,
 			'merchantUserId'         => $phone_pay_settings['phone_pay_merchant_user_id'],
-			'authWorkflowType'       => 'PENNY_DROP',
+			'authWorkflowType'       => 'TRANSACTION',
 			'amountType'             => 'FIXED',
 			'amount'                 => $amount,
 			'frequency'              => $frequency,
@@ -430,7 +430,7 @@ class DNM_Helper {
 
 		// Calculate X-Verify
 		$xVerify = hash( 'sha256', $base64Payload . '/v3/recurring/subscription/create' . $saltKey ) . '###' . $saltIndex;
-		
+
 		// Initialize cURL
 		$ch = curl_init();
 
@@ -464,7 +464,7 @@ class DNM_Helper {
 
 		// Decode the response
 		$responseData = json_decode( $response, true );
-		
+
 		// Check the response
 		if ( $responseData['success'] === true ) {
 			return array(
