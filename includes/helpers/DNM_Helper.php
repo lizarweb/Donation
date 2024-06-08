@@ -405,7 +405,7 @@ class DNM_Helper {
 			'merchantId'             => $phone_pay_settings['phone_pay_merchant_id'],
 			'merchantSubscriptionId' => $subscriptionId,
 			'merchantUserId'         => $phone_pay_settings['phone_pay_merchant_user_id'],
-			'authWorkflowType'       => 'TRANSACTION',
+			'authWorkflowType'       => 'PENNY_DROP',
 			'amountType'             => 'FIXED',
 			'amount'                 => $amount,
 			'frequency'              => $frequency,
