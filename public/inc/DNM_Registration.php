@@ -347,7 +347,7 @@ class DNM_Registration {
 
 		if ( $subscription['state'] === 'CREATED' ) {
 			// pay using subscription
-			$responseData = DNM_Helper::pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, 'WEB', 'UPI_QR', 'com.phonepe.app' );
+			$responseData = DNM_Helper::pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $amountInPaisa ,'UPI_QR',  );
 
 			$code        = $responseData['code'];
 			$redirectUrl = $responseData['data']['redirectUrl'];
@@ -515,6 +515,7 @@ class DNM_Registration {
 				$phone_pay_settings['phone_pay_salt_key'],
 				$phone_pay_settings['phone_pay_salt_index'],
 				$phone_pay_settings['phone_pay_redirect_url'],
+				$amount_in_paisa,
 				'UPI_QR',
 			);
 

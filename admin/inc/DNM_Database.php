@@ -67,9 +67,9 @@ class DNM_Database {
 
 	public static function dropTables() {
 		global $wpdb;
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . DNM_ORDERS );
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . DNM_CUSTOMERS );
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . DNM_SETTINGS );
+		// $wpdb->query( 'DROP TABLE IF EXISTS ' . DNM_ORDERS );
+		// $wpdb->query( 'DROP TABLE IF EXISTS ' . DNM_CUSTOMERS );
+		// $wpdb->query( 'DROP TABLE IF EXISTS ' . DNM_SETTINGS );
 	}
 
 	public static function deactivation() {

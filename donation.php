@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Donation
+ * Plugin Name: Donation with transaction
  * Plugin URI: #
  * Description: Donation
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Weblizar
  * Author URI: https://weblizar.com
  * Text Domain: donation
@@ -20,7 +20,7 @@ if ( ! defined( 'DNM_PLUGIN_DIR_PATH' ) ) {
 }
 
 define( 'DNM_WEBLIZAR_PLUGIN_URL', '#' );
-define( 'DNM_VERSION', '1.0.0' );
+define( 'DNM_VERSION', '1.0.3' );
 
 final class DN_Management {
 	private static $instance = null;
