@@ -49,6 +49,10 @@ if (isset($_GET['id'])) {
 					echo DNM_Helper::generate_form_field('amount', 'Amount', 'number', $order_data['amount']);
 					echo DNM_Helper::generate_form_field('payment_method', 'Payment Method', 'text', $order_data['payment_method']);
 					echo DNM_Helper::generate_form_field('reference_id', 'Reference ID', 'text', $order_data['reference_id']);
+					if (!$order_id) {
+						echo DNM_Helper::generate_form_field('type', 'Type', 'select', array('11000' => 'Fixed 11000', 'custom' => 'CUSTOM', 'membership' => 'MEMBERSHIP'));
+					}
+
 					?>
 				</div>
 				<button type="submit" class="btn btn-dark" id="dnm-save-order-btn">Submit</button>

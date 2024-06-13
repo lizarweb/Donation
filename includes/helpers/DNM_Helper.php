@@ -349,12 +349,28 @@ class DNM_Helper {
 	}
 
 	public static function generate_form_field( $id, $label, $type, $value ) {
-		return <<<HTML
-		<div class="mb-3 col-6'">
-			<label for="$id" class="form-label">$label:</label>
-			<input type="$type" id="$id" name="$id" class="form-control" value="$value">
-		</div>
-		HTML;
+
+		if ($type == "select" && is_array($value)) {
+			$optionsHtml = '';
+			foreach ($value as $optionValue => $optionLabel) {
+				$optionsHtml .= "<option value=\"$optionValue\">$optionLabel</option>";
+			}
+			return <<<HTML
+			<div class="mb-3 col-6">
+				<label for="$id" class="form-label">$label:</label>
+				<select id="$id" name="$id" class="form-control">
+					$optionsHtml
+				</select>
+			</div>
+			HTML;
+		} else {
+			return <<<HTML
+			<div class="mb-3 col-6">
+				<label for="$id" class="form-label">$label:</label>
+				<input type="$type" id="$id" name="$id" class="form-control" value="$value">
+			</div>
+			HTML;
+		}
 	}
 
 	public static function getNextOrderId( $payment_type ) {

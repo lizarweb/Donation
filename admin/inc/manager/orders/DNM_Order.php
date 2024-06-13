@@ -298,7 +298,7 @@ class DNM_Order {
 						}
 					} else {
 						// Insert new order data
-						$last_order_id          = DNM_Helper::getNextOrderId();
+						$last_order_id          = DNM_Helper::getNextOrderId($data['type']);
 						$order_data['order_id'] = $last_order_id;
 						$order_id               = DNM_Database::insertIntoTable( DNM_ORDERS, $order_data );
 						$message                = 'Order has been saved successfully.';
