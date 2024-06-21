@@ -291,7 +291,7 @@ class DNM_Order {
 						// Update the order data
 						unset( $order_data['type'] );
 						$order_data['updated_at'] = current_time( 'mysql' );
-						$update_result            = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'order_id' => $data['order_id'] ) );
+						$update_result            = DNM_Database::updateTable( DNM_ORDERS, $order_data, array( 'ID' => $data['order_id'] ) );
 						$message                  = 'Order has been updated successfully.';
 						if ( false === $update_result ) {
 							throw new Exception( 'Failed to update order.' );
