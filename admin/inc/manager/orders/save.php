@@ -36,7 +36,7 @@ if (isset($_GET['id'])) {
 			<form action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" method="post" id="dnm-save-order-form">
 				<?php wp_nonce_field('dnm_save_order', 'nonce'); ?>
 				<input type="hidden" name="action" value="dnm-save-order">
-				<input type="hidden" name="order_id" id="order_id" value="<?php echo esc_attr($order_data['order_id']); ?>">
+				<input type="hidden" name="order_id" id="order_id" value="<?php echo esc_attr($order->ID); ?>">
 				<h2 class="mb-4">Add New Order</h2>
 				<div class="row">
 					<?php
