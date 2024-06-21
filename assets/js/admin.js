@@ -147,16 +147,16 @@
             }, 1000);
         }
 
-        $(document).on('click', '#dnm-print-invoice', function() {
-			var targetId = '#printableArea';
-			var title = $(this).data('title');
-			if(title) {
-				title = '<title>' + title  + '</title>';
-			}
-			var styleSheets = $(this).data('styles');
+        // $(document).on('click', '#dnm-print-invoice', function() {
+		// 	var targetId = '#printableArea';
+		// 	var title = $(this).data('title');
+		// 	if(title) {
+		// 		title = '<title>' + title  + '</title>';
+		// 	}
+		// 	var styleSheets = $(this).data('styles');
 
-			dnmPrint(targetId, title, styleSheets);
-		});
+		// 	dnmPrint(targetId, title, styleSheets);
+		// });
 
         // printDiv('printableArea', 'Invoice', ['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css']);
 
@@ -186,7 +186,7 @@
             var shortCode = $(this).text();
             copyToClipboard(shortCode);
         });
-        
+
         $("#donation_account").on("click", function () {
             var shortCode = $(this).text();
             copyToClipboard(shortCode);

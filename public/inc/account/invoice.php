@@ -41,7 +41,7 @@ $logo = DNM_Helper::get_logo();
 <div class="container-fluid mt-2 ">
 	<div class="row d-flex justify-content-center">
 		<div class="col-md-8">
-			<button id="dnm-print-invoice" class="btn btn-dark" data-styles='["<?php echo esc_url(DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css'); ?>"]' data-title="Print Receipt">Download Receipt</button>
+			<button id="dnm-print-invoice" class="btn btn-dark" data-styles='["<?php echo esc_url(DNM_PLUGIN_URL . '/assets/css/bootstrap.min.css'); ?>"]' data-title="Download Receipt">Download Receipt</button>
 			<div class="card mt-3 p-4 " id="printableArea" style="width: 800px!important; " >
 				<div class="row">
 					<div class="col-9 ">
