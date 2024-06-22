@@ -16,10 +16,12 @@ $order_data = array(
 	'reference_id'      => '',
 );
 
+$order_id = 0;
 if (isset($_GET['id'])) {
 	$order_id = absint($_GET['id']);
 	if (0 !== $order_id) {
 		$order = DNM_Order::get_order($order_id);
+		$order_id = $order->ID;
 		if (!$order) {
 			wp_safe_redirect($page_url);
 			exit;
@@ -36,7 +38,7 @@ if (isset($_GET['id'])) {
 			<form action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" method="post" id="dnm-save-order-form">
 				<?php wp_nonce_field('dnm_save_order', 'nonce'); ?>
 				<input type="hidden" name="action" value="dnm-save-order">
-				<input type="hidden" name="order_id" id="order_id" value="<?php echo esc_attr($order->ID); ?>">
+				<input type="hidden" name="order_id" id="order_id" value="<?php echo esc_attr($order_id); ?>">
 				<h2 class="mb-4">Add New Order</h2>
 				<div class="row">
 					<?php
