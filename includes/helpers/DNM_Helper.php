@@ -412,7 +412,7 @@ class DNM_Helper {
 	}
 
 
-	public static function create_phonepe_user_subscription( $subscriptionId, $phone, $amount, $frequency = 'MONTHLY', $recurringCount = 12 ) {
+	public static function create_phonepe_user_subscription( $subscriptionId, $phone, $amount, $frequency = 'MONTHLY', $recurringCount = 120 ) {
 
 		$phone_pay_settings = DNM_Config::get_phone_pay_settings();
 
@@ -421,7 +421,7 @@ class DNM_Helper {
 			'merchantId'             => $phone_pay_settings['phone_pay_merchant_id'],
 			'merchantSubscriptionId' => $subscriptionId,
 			'merchantUserId'         => $phone_pay_settings['phone_pay_merchant_user_id'],
-			'authWorkflowType'       => 'PENNY_DROP',
+			'authWorkflowType'       => 'TRANSACTION',
 			'amountType'             => 'FIXED',
 			'amount'                 => $amount,
 			'frequency'              => $frequency,
@@ -495,13 +495,14 @@ class DNM_Helper {
 		}
 	}
 
-	public static function pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $paymentType = 'UPI_QR' ) {
+	public static function pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl,  $amount, $paymentType = 'UPI_QR', ) {
 		// Your JSON payload
 		$data = array(
 			'merchantId'        => $merchantId,
 			'merchantUserId'    => $merchantUserId,
 			'subscriptionId'    => $subscriptionId,
 			'authRequestId'     => $authRequestId,
+			'amount'            => $amount,
 			'paymentInstrument' => array(
 				'type' => $paymentType,
 			),
@@ -510,8 +511,12 @@ class DNM_Helper {
 		// Convert the JSON payload to Base64
 		$base64Payload = base64_encode( json_encode( $data ) );
 
+		error_log( 'base64Payload:'. $base64Payload );
+
 		// Calculate X-Verify
 		$xVerify = hash( 'sha256', $base64Payload . '/v3/recurring/auth/init' . $saltKey ) . '###' . $saltIndex;
+
+		error_log( 'xVerify:'. $xVerify );
 
 		// Your request
 		$request = array(
@@ -546,6 +551,8 @@ class DNM_Helper {
 
 		// Execute and get the response
 		$response = curl_exec( $ch );
+
+		error_log( 'response:'. $response);
 
 		// Close cURL
 		curl_close( $ch );

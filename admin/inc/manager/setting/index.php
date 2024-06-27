@@ -305,6 +305,12 @@ $email_enable = DNM_Config::get_email_settings();
 													<button class="btn btn-dark w-100" type="button" id="fixed_form">[fixed_registration_form]</button>
 												</div>
 												<div class="col-sm-8 mb-3">
+													<label for="fixed_form_ref" class="form-label"> <?php echo __( 'Fixed Registration member add Shortcode (Click To Copy)', 'donation' ); ?></label>
+												</div>
+												<div class="col-sm-4 mb-3">
+													<button class="btn btn-dark w-100" type="button" id="fixed_form_ref">[fixed_registration_form_ref]</button>
+												</div>
+												<div class="col-sm-8 mb-3">
 													<label for="member_form" class="form-label"> <?php echo __( 'Membership Registration Shortcode (Click To Copy)', 'donation' ); ?></label>
 												</div>
 												<div class="col-sm-4 mb-3">

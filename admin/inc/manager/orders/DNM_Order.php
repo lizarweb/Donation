@@ -29,7 +29,12 @@ class DNM_Order {
 		$total_query   = $query;
 		$total_data    = $wpdb->get_results( $total_query );
 		$total_records = count( $total_data );
-		$query        .= " ORDER BY o.id {$dir} LIMIT {$offset}, {$limit}";
+		$query .= " ORDER BY o.id {$dir}";
+
+		// Add the LIMIT clause if $limit is greater than 0
+		if ($limit > 0) {
+			$query .= " LIMIT {$offset}, {$limit}";
+		}
 		$data          = $wpdb->get_results( $query );
 		$orders        = array();
 
@@ -89,7 +94,12 @@ class DNM_Order {
 		$total_query   = $query;
 		$total_data    = $wpdb->get_results( $total_query );
 		$total_records = count( $total_data );
-		$query        .= " ORDER BY o.id {$dir} LIMIT {$offset}, {$limit}";
+		$query .= " ORDER BY o.id {$dir}";
+
+		// Add the LIMIT clause if $limit is greater than 0
+		if ($limit > 0) {
+			$query .= " LIMIT {$offset}, {$limit}";
+		}
 		$data          = $wpdb->get_results( $query );
 		$orders        = array();
 
@@ -146,7 +156,13 @@ class DNM_Order {
 		$total_query   = $query;
 		$total_data    = $wpdb->get_results( $total_query );
 		$total_records = count( $total_data );
-		$query .= " ORDER BY o.id DESC LIMIT {$offset}, {$limit}";
+		// Add the ORDER BY clause
+		$query .= " ORDER BY o.id {$dir}";
+
+		// Add the LIMIT clause if $limit is greater than 0
+		if ($limit > 0) {
+			$query .= " LIMIT {$offset}, {$limit}";
+		}
 		$data          = $wpdb->get_results( $query );
 		$orders        = array();
 
@@ -167,7 +183,7 @@ class DNM_Order {
 					$order->subscription_status == 'active' ? '<span class="badge bg-success">' . ucfirst($order->subscription_status) . '</span>' : ($order->subscription_status == 'inactive' ? '<span class="badge bg-danger">' . ucfirst($order->subscription_status) . '</span>' : '<span class="badge bg-secondary">N/A</span>'),
 					'<div class="btn-group" role="group" aria-label="Basic example">
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=save&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i></a>
-						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=reference&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people-fill"></i></a>
+						<a href="' . DNM_Helper::get_page_url( 'donation-memberships-orders' ) . '&action=reference&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people-fill"></i></a>
 						<a href="' . DNM_Helper::get_page_url( 'donation-orders' ) . '&action=invoice&id=' . $order->ID . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-receipt"></i></a>
 						<button class="btn btn-sm btn-outline-danger delete-order" data-id="' . $order->ID . '" data-nonce="' . wp_create_nonce( 'dnm_delete_order' ) . '"><i class="bi bi-trash-fill"></i></button>
 					</div>',
@@ -229,11 +245,15 @@ class DNM_Order {
 					'default' => 'custom',
 					'filter'  => 'sanitize_text_field',
 				),
+				'reference_id'   => array(
+					'default' => '',
+					'filter'  => 'sanitize_text_field',
+				),
 			);
 
 			$data = self::get_post_values( $fields );
 
-			$errors = DNM_Helper::validate_fields( $fields, $data, array( 'order_id', 'address', 'payment_method', 'city', 'state' ) );
+			$errors = DNM_Helper::validate_fields( $fields, $data, array( 'order_id', 'address', 'payment_method', 'city', 'state', 'reference_id' ) );
 
 			global $wpdb;
 
@@ -246,13 +266,14 @@ class DNM_Order {
 				// $errors['email'] = 'Email already exists. Please use another email.';
 				// } else {
 					$customerData = array(
-						'name'       => $data['name'],
-						'email'      => $data['email'],
-						'phone'      => $data['phone'],
-						'city'       => $data['city'],
-						'state'      => $data['state'],
-						'address'    => $data['address'],
-						'created_at' => current_time( 'mysql' ),
+						'name'         => $data['name'],
+						'email'        => $data['email'],
+						'phone'        => $data['phone'],
+						'city'         => $data['city'],
+						'state'        => $data['state'],
+						'address'      => $data['address'],
+						'reference_id' => $data['reference_id'],
+						'created_at'   => current_time( 'mysql' ),
 					);
 
 					if ( $customer_id ) {

@@ -50,8 +50,7 @@
     handleFormSubmit('#dnm-save-custom-registration-form');
     handleFormSubmit('#dnm-save-fixed-registration-form');
 
-
-    function membershipFormSubmit(formId) {
+    function handleFormSubmitRef(formId) {
         const form = $(formId);
         form.on('submit', function (e) {
             e.preventDefault();
@@ -63,9 +62,70 @@
                 processData: false,  // tell jQuery not to process the data
                 contentType: false,  // tell jQuery not to set contentType
                 success: function (response) {
+                    console.log(response);
+                    
+                    // Remove all alerts before starting
+                    $('.alert').remove();
+
+                    if (response.success) {
+                        $('input').removeClass('is-invalid is-valid');
+                        $('.invalid-feedback').remove();
+                        form.parent().prepend(`<div class="alert alert-success">${response.data.message}</div>`);
+                        
+                        // Reload the page after 3 seconds (3000 milliseconds)
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        const errors = response.data;
+                        if (errors) {
+                            $('input').removeClass('is-invalid is-valid');
+                            $('.invalid-feedback').remove();
+                            $.each(errors, function (key, value) {
+                                $(`#${key}`).removeClass('is-valid').addClass('is-invalid');
+                                const feedbackId = `${key}Feedback`;
+                                $(`#${feedbackId}`).remove();
+                                $(`#${key}`).after(`<div id="${feedbackId}" class="invalid-feedback">${value}</div>`);
+                            });
+                            // form.parent().prepend(`<div class="alert alert-danger">${response.data}</div>`);
+                            console.error(response.data);
+                        }
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error(`Request failed: ${textStatus}`);
+                }
+            });
+        });
+    }
+    handleFormSubmitRef('#dnm-save-fixed-registration-form_ref');
+
+    function membershipFormSubmit(formId) {
+        const form = $(formId);
+        form.on('submit', function (e) {
+            e.preventDefault();
+            
+            // Get the submit button and its original text
+            const submitButton = $(this).find('button[type="submit"]');
+            const originalButtonText = submitButton.text();
+            
+            // Disable the submit button and change its text to 'Loading...'
+            submitButton.prop('disabled', true).text('Loading...');
+    
+            const formData = new FormData(this);
+            $.ajax({
+                url: dnmData.ajax_url,
+                type: form.attr('method'),
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success: function (response) {
                     // Remove all alerts before starting
                     $('.alert').remove();
                     if (response.success === false) {
+                        // Enable the submit button and restore its original text
+                        submitButton.prop('disabled', false).text(originalButtonText);
+                        
                         // Assuming the error message is in response.data
                         // and the keys in response.data correspond to the ids of the input fields
                         for (let field in response.data) {
@@ -78,12 +138,16 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.error(`Request failed: ${textStatus}`);
+                    // Enable the submit button and restore its original text
+                    submitButton.prop('disabled', false).text(originalButtonText);
                 }
             });
         });
     }
-
+    
     membershipFormSubmit('#dnm-save-membership-registration-form');
+    
+        
 
     // when click on the subscription button send ajax request
     $('#subscription-activate-btn').on('click', function (e) {

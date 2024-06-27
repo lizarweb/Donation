@@ -11,6 +11,7 @@ add_action( 'plugins_loaded', array( 'DNM_Language', 'load_translation' ) );
 // Add shortcode.
 add_shortcode( 'donation_registration_form', array( 'DNM_Shortcode', 'custom_registration' ) );
 add_shortcode( 'fixed_registration_form', array( 'DNM_Shortcode', 'fixed_registration' ) );
+add_shortcode( 'fixed_registration_form_ref', array( 'DNM_Shortcode', 'fixed_registration_ref' ) );
 add_shortcode( 'member_registration_form', array( 'DNM_Shortcode', 'member_registration' ) );
 add_shortcode( 'payment_status', array( 'DNM_Shortcode', 'payment_status' ) );
 add_shortcode( 'donation_account', array( 'DNM_Shortcode', 'donation_account' ) );
@@ -21,6 +22,9 @@ add_action( 'wp_ajax_nopriv_dnm_save_custom_registration_form', array( 'DNM_Regi
 
 add_action( 'wp_ajax_dnm_save_fixed_registration_form', array( 'DNM_Registration', 'save_fixed_registration_form' ) );
 add_action( 'wp_ajax_nopriv_dnm_save_fixed_registration_form', array( 'DNM_Registration', 'save_fixed_registration_form' ) );
+
+add_action( 'wp_ajax_dnm_save_fixed_registration_form_ref', array( 'DNM_Registration', 'save_fixed_registration_form_ref' ) );
+add_action( 'wp_ajax_nopriv_dnm_save_fixed_registration_form_ref', array( 'DNM_Registration', 'save_fixed_registration_form_ref' ) );
 
 add_action( 'wp_ajax_dnm_save_membership_registration_form', array( 'DNM_Registration', 'save_membership_registration_form' ) );
 add_action( 'wp_ajax_nopriv_dnm_save_membership_registration_form', array( 'DNM_Registration', 'save_membership_registration_form' ) );

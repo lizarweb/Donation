@@ -86,8 +86,8 @@ if (is_user_logged_in()) {
 						
 						</h4>
 
-						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->ID; ?>" id="subscription-activate-btn">Activate</button>
-						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->ID; ?>" id="subscription-verify-btn">Verify</button>
+						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->ID; ?>" id="subscription-activate-btn"> Pay Now</button> <span> To Make Payment and setup auto pay. </span> <br> <br>
+						<button class="btn btn-primary" data-order-id="<?php echo $order_data[0]->ID; ?>" id="subscription-verify-btn">Verify Payment Subscription</button> <span>Click this button to verify the payment and auto-pay.</span>
 
 					</div>
 				</div>
@@ -162,25 +162,37 @@ if (is_user_logged_in()) {
 												<th>Email</th>
 												<th>Phone</th>
 												<th>Amount</th>
-												<th>Referenced BY</th>
+												<th>Referenced amount</th>
+												<th>Status</th>
 											</tr>
 										</thead>
 										<tbody>
 											<?php
-											$total_commision  = 0;
+											
+											$total_commission  = 0;
 											$referenced_users = DNM_Database::getReferencedCustomers($customer_reference_id);
 											$commission_percentage = DNM_Helper::get_referenced_discount();
 											if (!empty($referenced_users)) {
 												foreach ($referenced_users as $user) {
+											// 		echo '<pre>';
+											// var_dump($user); die;
+											$commission_ref = 0;
+											if ($user->Subscription_status === 'active') {
+												$commission_ref = esc_html($user->orders[0]->amount * $commission_percentage / 100);
+												// You can now use $commission as needed
+											}
 													echo '<tr>';
 													echo '<td>' . esc_html($user->name) . '</td>';
 													echo '<td>' . esc_html($user->email) . '</td>';
 													echo '<td>' . esc_html($user->phone) . '</td>';
 													echo '<td>' . esc_html($user->orders[0]->amount) . '</td>';
-													echo '<td>' . esc_html($user->reference_id) . '</td>';
+													echo '<td>' . esc_html($commission_ref)  . '</td>';
+													echo '<td>' . esc_html(ucfirst($user->Subscription_status)) . '</td>';
 													echo '</tr>';
-													$commission       = $user->orders[0]->amount * ($commission_percentage / 100);
-													$total_commision += $commission;
+													if ($user->Subscription_status === 'active') {
+														$commission = $user->orders[0]->amount * ($commission_percentage / 100);
+														$total_commission += $commission;
+													}
 												}
 											} else {
 												echo '<tr><td colspan="7" class="text-center">No referenced users found.</td></tr>';
@@ -209,7 +221,7 @@ if (is_user_logged_in()) {
 				<div class="card">
 					<div class="card-body">
 						<div class="pb-2">
-							<h4 class="card-title mb-3">Reference Balance : <?php echo DNM_Config::get_amount_text($total_commision); ?></h4>
+							<h4 class="card-title mb-3">Reference Balance : <?php echo DNM_Config::get_amount_text($total_commission); ?></h4>
 
 							<ul class="ps-3 mb-0">
 								<li>Reference Percentage : <?php echo $commission_percentage; ?>%</li>

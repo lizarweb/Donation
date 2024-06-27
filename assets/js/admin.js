@@ -9,7 +9,14 @@
                 serverSide: true,
                 responsive: true,
                 paging: true,
+                // dom:'<"dt-top-container"<l><"dt-center-in-div"B><f>r>t<"dt-filter-spacer"f><ip>',
                 // pageLength: 25,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                layout: {
+                    top1Start: {
+                        buttons: [ 'csv', 'excel', 'pdf', 'print']
+                    }
+                },
                 ajax: {
                     url: ajaxurl,
                     type: 'POST',
@@ -177,6 +184,10 @@
             var shortCode = $(this).text();
             copyToClipboard(shortCode);
         });
+        $("#fixed_form_ref").on("click", function () {
+            var shortCode = $(this).text();
+            copyToClipboard(shortCode);
+        });        
         $("#member_form").on("click", function () {
             var shortCode = $(this).text();
             copyToClipboard(shortCode);

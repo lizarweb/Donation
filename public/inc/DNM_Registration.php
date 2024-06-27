@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || die();
 require_once DNM_PLUGIN_DIR_PATH . 'includes/constants.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Helper.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/helpers/DNM_Config.php';
-
+require_once DNM_PLUGIN_DIR_PATH . 'admin/inc/DNM_Database.php';
 require_once DNM_PLUGIN_DIR_PATH . 'includes/vendor/autoload.php';
 
 use PhonePe\PhonePe;
@@ -104,7 +104,7 @@ class DNM_Registration {
 
 		// validate reference_id only if it's not empty
 		if ( ! empty( $reference_id ) ) {
-			$errors = DNM_Helper::validate_reference_id( $reference_id, 10 );
+			$errors = DNM_Helper::validate_reference_id( $reference_id, null );
 		}
 
 		if ( ! empty( $errors ) ) {
@@ -158,6 +158,60 @@ class DNM_Registration {
 		exit;
 	}
 
+	public static function save_fixed_registration_form_ref() {
+		$nonce = $_POST['nonce'];
+		
+		if ( ! wp_verify_nonce( $nonce, 'dnm_save_fixed_registration_form_ref' ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid nonce' ) );
+		}
+
+		$name         = sanitize_text_field( $_POST['name'] );
+		$email        = sanitize_email( $_POST['email'] );
+		$phone        = filter_var( $_POST['phone'], FILTER_SANITIZE_NUMBER_INT );
+		$phone        = preg_replace( '/[^0-9]/', '', $phone ); // Remove non-digit characters
+		$city         = sanitize_text_field( $_POST['city'] );
+		$state        = sanitize_text_field( $_POST['state'] );
+		$address      = sanitize_text_field( $_POST['address'] );
+		$amount       = sanitize_text_field( $_POST['amount'] );
+		$reference_id = sanitize_text_field( $_POST['reference_id'] );
+
+		$errors = array();
+
+		// validate reference_id only if it's not empty
+		if ( ! empty( $reference_id ) ) {
+			$errors = DNM_Helper::validate_reference_id( $reference_id, 10 );
+		}
+
+		if ( ! empty( $errors ) ) {
+			wp_send_json_error( $errors );
+		}
+
+		$donation_data = array(
+			'name'         => $name,
+			'email'        => $email,
+			'phone'        => $phone,
+			'city'         => $city,
+			'state'        => $state,
+			'address'      => $address,
+			'reference_id' => $reference_id,
+		);
+
+		try {
+			global $wpdb;
+			// $wpdb->query( 'BEGIN' );
+			$customer_id = DNM_Database::insertIntoTable( DNM_CUSTOMERS, $donation_data );
+
+			$message = 'Member added successfully.';
+
+			wp_send_json_success( array( 'message' => $message ) );
+
+			// $wpdb->query( 'COMMIT' );
+		} catch ( Exception $e ) {
+			// $wpdb->query( 'ROLLBACK' ); 
+		}
+		exit;
+	}
+
 	public static function save_membership_registration_form() {
 		$nonce = $_POST['nonce'];
 		if ( ! wp_verify_nonce( $nonce, 'dnm_save_membership_registration_form' ) ) {
@@ -185,7 +239,7 @@ class DNM_Registration {
 
 		// validate reference_id only if it's not empty
 		if ( ! empty( $reference_id ) ) {
-			$errors = DNM_Helper::validate_reference_id( $reference_id, 10 );
+			$errors = DNM_Helper::validate_reference_id( $reference_id, null );
 		}
 
 		if ( ! empty( $errors ) ) {
@@ -347,7 +401,7 @@ class DNM_Registration {
 
 		if ( $subscription['state'] === 'CREATED' ) {
 			// pay using subscription
-			$responseData = DNM_Helper::pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, 'WEB', 'UPI_QR', 'com.phonepe.app' );
+			$responseData = DNM_Helper::pay_using_phonepe_user_subscription( $merchantId, $merchantUserId, $subscriptionId, $authRequestId, $saltKey, $saltIndex, $callbackUrl, $amountInPaisa ,'UPI_QR',  );
 
 			$code        = $responseData['code'];
 			$redirectUrl = $responseData['data']['redirectUrl'];
@@ -515,6 +569,7 @@ class DNM_Registration {
 				$phone_pay_settings['phone_pay_salt_key'],
 				$phone_pay_settings['phone_pay_salt_index'],
 				$phone_pay_settings['phone_pay_redirect_url'],
+				$amount_in_paisa,
 				'UPI_QR',
 			);
 
