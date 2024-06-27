@@ -160,7 +160,7 @@ class DNM_Registration {
 
 	public static function save_fixed_registration_form_ref() {
 		$nonce = $_POST['nonce'];
-		
+
 		if ( ! wp_verify_nonce( $nonce, 'dnm_save_fixed_registration_form_ref' ) ) {
 			wp_send_json_error( array( 'message' => 'Invalid nonce' ) );
 		}
@@ -207,7 +207,7 @@ class DNM_Registration {
 
 			// $wpdb->query( 'COMMIT' );
 		} catch ( Exception $e ) {
-			// $wpdb->query( 'ROLLBACK' ); 
+			// $wpdb->query( 'ROLLBACK' );
 		}
 		exit;
 	}
@@ -233,6 +233,11 @@ class DNM_Registration {
 		$amount = (int) $amount;
 
 		$customer_exits = DNM_Database::getRecord( DNM_USERS, 'user_email', $email );
+		if ( $customer_exits ) {
+			$errors['email'] = 'Email already exists';
+		}
+
+		$customer_exits = DNM_Database::getRecord( DNM_CUSTOMERS, 'email', $email );
 		if ( $customer_exits ) {
 			$errors['email'] = 'Email already exists';
 		}
